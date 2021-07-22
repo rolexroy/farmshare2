@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="favicon" type="image/jpg" href="images/tractor.png"/>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudfare.com/ajax/libs/font-awesome/4.7/css/font-awesome.min.css"> -->
+    <script src="https://kit.fontawesome.com/2e42802b2c.js" crossorigin="anonymous"></script>
+    
+    <title>Farm share</title>
+</head>
+<body>
+   <div class="nav"> 
+       <a href="/"> <img src="/images/farmshare2.png" alt="" class="logo"></a>
+       <a href="/" class="anchor">Home</a>
+       <a href="#about" class="anchor">About</a>
+       <a href="#" class="anchor">Contact</a>
+       <a href="blog" class="anchor">Community</a>
+   </div>
+   
+<!-- Page Header -->
+<h1 class="heading heading__margin">Create New Post</h1>
+<div class="container">
+  <form action="/posts/store" method="POST" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Title"><br>
+    <input type="text" name="description" placeholder="Description"><br>
+    <textarea name="content" placeholder="Content ..." cols="30" rows="10" "></textarea>
+    <input type="file" id="myFile" name="myImage">
+    <button>Create Post</button>
+    <!-- <input type="submit" value="Create Post"> -->
+  </form>  
+</div>
+  
+<div class="footer-top">
+  <div>
+      <h4 class="heading">Farm Share</h4>
+      <p>
+          Farm Share works with smallholder farmers organized into groups along the Planning and Preparation, Production,
+          Aggregation stages of the value chain to streamline production aspects of the value chain and ensure farmers have adequate capacity required at these stages.
+      </p>
+  </div>
+  <div class="footer-center">
+      <h4 class="heading">Information</h4>
+      <a href="" class="anchor-footer"> Home </a>
+      <a href="" class="anchor-footer"> About </a>
+      <a href="" class="anchor-footer"> Community </a>
+      <a href="" class="anchor-footer"> Blog </a>
+    </div>
+  <div class="footer-right">
+      <h4 >Have questions?</h4>
+      <p><i class="fas fa-map-marker"></i> Kiambu, Kenya</p>
+      <br/>
+      <p><i class="fas fa-phone-alt"></i> +254721518182</p>
+      <br/>
+      <p><i class="far fa-envelope"></i> ndigwa04@gmail.com</p>
+      
+  </div>
+</div>
+<div class="footer-bottom"> FarmShare &copy; 2021 All rights reserved
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+</body>
+</html>

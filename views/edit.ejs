@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="favicon" type="image/jpg" href="images/tractor.png"/>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudfare.com/ajax/libs/font-awesome/4.7/css/font-awesome.min.css"> -->
+    <script src="https://kit.fontawesome.com/2e42802b2c.js" crossorigin="anonymous"></script>
+    
+    <title>Farm share</title>
+</head>
+<body>
+   <div class="nav"> 
+       <a href="/"> <img src="images/farmshare2.png" alt="" class="logo"><img src="images/download.png" alt="" class="logo"></a>
+       <a href="/" class="anchor">Home</a>
+       <a href="#about" class="anchor">About</a>
+       <a href="#" class="anchor">Contact</a>
+       <a href="blog" class="anchor">Community</a>
+   </div>
+
+            <% if(locals.isLoggedIn){%>
+                <p class="username"><%= locals.username%>, <span class="logout"><a href="/logout">Logout</a></span> </p>
+            <%}%>
+           
+        </nav>
+        
+    </header>
+<div class="container ">
+
+    <h2>Edit Item</h2>
+
+    <form action="/update/<%= item.id %>" method="POST" enctype="multipart/form-data">
+        <div class="form-content">
+            <input type="text" name="title" value ="<%= item.title %>">
+            <textarea name="content" id="content" cols="30" rows="10" ></textarea>
+            <input type="file" id="myFile" name="myImage" value="<%= item.image%>">
+            <div class="form-btns">
+                <a href="/blog" class="btn">Cancel</a>
+                <input type="submit" class="btn" value = "Save">
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<script>
+   let content = document.getElementById('content');
+   content.value = '<%= item.content %>';
+</script>
+<%- include('partials/footer') %>
