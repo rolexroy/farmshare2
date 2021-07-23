@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+   
+    <table>
+            <tr>
+                <th>Group Name</th>
+                <th>Commodity</th>
+                <th>Quality</th>
+                <th>Quantity</th>
+            </tr>
+            <%for(let i of data) {%>
+                <tr>
+                    <td><%= i.groupName %></td>
+                    <td><%= i.commodity %></td>
+                    <td><%= i.quality %></td>
+                    <td><%= i.quantity%></td>   
+                </tr>
+            <% } %> 
+            </td> 
+    </table>
+</body>
+</html>
