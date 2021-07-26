@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'sql1pass',
     database: 'farmshare'
 
 });
@@ -160,6 +160,40 @@ app.post('/delete/:id', (req ,res) => {
         }
     );
 })
+
+app.get('/production',(req,res)=>{
+    connection.query('SELECT * FROM  production',(error,results)=>{
+        
+        if(error){
+            console.log(error)
+        } else {
+           res.render('production',{items:results})
+        }
+    })
+    
+})
+
+app.post('/product/new',(req,res)=>{ 
+    let id = req.body.id
+    let farmer_id = req.body.farmerId
+    let commodity = req.body.commodity
+    let yield = req.body.yield
+    let collection = req.body.collection
+    let region = req.body.region
+    let harvest = req.body.harvest
+    connection.query('INSERT INTO production (id,commodity,expectedYield,collectionCenter,region,expectedHarvest) VALUES(?,?,?,?,?,?)',[id,commodity,yield,collection,region,harvest],
+    (error,results) =>{
+        if(error){
+            console.log(error)
+        } else {
+            console.log('values inserted successfully')
+            document.reload()
+        }
+    }
+    )
+
+})
+
 app.listen(3000 , () => {
     console.log('App listening on port 3000');
 });
