@@ -61,6 +61,21 @@ app.post('/farmer/new', (req, res) => {
     });
 });
 
+app.get('/aggregation',(req, res) => {
+    const query = `SELECT farmers.groupName, production.commodity, production.quality, SUM(production.expectedYield) AS quantity
+    FROM farmers
+    INNER JOIN production ON production.id = farmers.id
+    GROUP BY  groupName, commodity, quality;`
+    connection.query(
+        query,
+        (error, results) => {
+            console.log(results);
+            res.render('aggregation' , {
+                data:results
+            });
+        }
+    );
+});
 app.get('/blog', (req, res) => {
     const blog = 'SELECT * FROM blog';
     connection.query(
