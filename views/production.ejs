@@ -18,7 +18,7 @@
         <label for="">commodity
             <input type="text" name="commodity">
         </label>
-        <label for="">Expected Yield
+        <label for="">Actual Yield
             <input type="text" name="yield">
         </label>
         <label for="">Collection Center
@@ -40,13 +40,12 @@
     <h2>Production Details</h2>
     <ul>
     <% for(let item of items){ %>
-        <li>  <%= item.id%> </li>
-        <li> <%= item.farmer_id%> </li>
+        <li>  <%= item.fname%> </li>
+        <li> <%= item.groupname%> </li>
+        <li>  <%= item.expecteYield%> </li>
+        <li>  <%= item.valuechain%> </li>
         <li>  <%= item.commodity%> </li>
-        <li>  <%= item.expectedYield%> </li>
-        <li>  <%= item.collectionCenter%> </li>
-        <li>  <%= item.region%> </li>
-        <li>  <%= item.expectedHarvest%> </li>
+       
 
    <% } %>
     </ul>
