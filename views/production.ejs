@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Production table</h1>
+    <form action="/product/new" METHOD="POST">
+        <label for="">
+            <input type="text" name="id">
+        </label>
+        <label for="">Farmer
+            <input type="text" name="farmerId">
+        </label>
+        <label for="">commodity
+            <input type="text" name="commodity">
+        </label>
+        <label for="">Actual Yield
+            <input type="text" name="yield">
+        </label>
+        <label for="">Collection Center
+            <input type="text" name="collection">
+        </label>
+        <label for="">Region
+            <input type="text" name="region">
+        </label>
+        <label for="">Expected harvest date
+            <input type="date" name="harvest">
+        </label>
+        
+       
+        <input type="submit" value="submit">
+
+        
+
+    </form>
+    <h2>Production Details</h2>
+    <ul>
+    <% for(let item of items){ %>
+        <li>  <%= item.fname%> </li>
+        <li> <%= item.groupname%> </li>
+        <li>  <%= item.expecteYield%> </li>
+        <li>  <%= item.valuechain%> </li>
+        <li>  <%= item.commodity%> </li>
+       
+
+   <% } %>
+    </ul>
+
+
+</body>
+</html>

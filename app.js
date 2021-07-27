@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'sql1pass',
     database: 'farmshare'
 
 });
@@ -47,14 +47,14 @@ app.get('/', (req,res) => {
 app.post('/farmer/new', (req, res) => {
     let id = req.body.id;
     let group = req.body.group;
-    connection.query('INSERT INTO farmers (id, groupName, fname, lname, tel, plotSize, plotNature, valueChain, investment, harvest, weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )',
-    [id, group, req.body.fname, req.body.lname, req.body.email, req.body.tel, req.body.plot, req.body.plot_nature, req.body.valueChain, req.body.investment, req.body.harvest, req.body.weight],
+    connection.query('INSERT INTO farmers (groupName, fname, lname, tel, plotSize, plotNature, valueChain, investement, harvest, weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [group, req.body.fname, req.body.lname, req.body.tel, req.body.plot, req.body.plot_nature, req.body.valueChain, req.body.investment, req.body.harvest, req.body.weight],
     
     (error,results) => { 
         if(error){
             console.log(error)
         } else {
-            res.redirect('/blog');
+            res.redirect('/');
             // console.log('inserted into db')
         }
         
@@ -206,6 +206,42 @@ app.post('/delete/:id', (req ,res) => {
         }
     );
 })
+
+app.get('/production',(req,res)=>{
+    connection.query('SELECT farmers.fname,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production ON farmers.id = production.farmer_id',(error,results)=>{
+        
+        if(error){
+            console.log(error)
+        } else {
+           res.render('production',{items:results})
+        }
+    })
+    
+})
+
+app.post('/product/new',(req,res)=>{ 
+    let id = req.body.id
+    let farmer_id = req.body.farmerId
+    let commodity = req.body.commodity
+    let yield = req.body.yield
+    let collection = req.body.collection
+    let region = req.body.region
+    let harvest = req.body.harvest
+    connection.query('INSERT INTO production (id,farmer_id,commodity,expectedYield,collectionCenter,region,expectedHarvest) VALUES(?,?,?,?,?,?,?)',[id,farmer_id,commodity,yield,collection,region,harvest],
+    (error,results) =>{
+        if(error){
+            console.log(error)
+        } else {
+            console.log('values inserted successfully')
+            res.redirect('/')
+        }
+    }
+    )
+
+})
+
+
+
 app.listen(3000 , () => {
     console.log('App listening on port 3000');
 });
