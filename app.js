@@ -93,8 +93,8 @@ app.get('/marketing', (req, res) => {
 app.post('/order/store', (req, res) => {
     let id = req.body.id;
     let name = req.body.name;
-    connection.query('INSERT INTO orders (customer_id, customer_name, commodity, quality, quantity) VALUES (?, ?, ?, ?, ? )',
-    [id, name, req.body.product, req.body.quality, req.body.quantity],
+    connection.query('INSERT INTO orders (customer_id, customer_name, commodity, quality, quantity, collection_point) VALUES (?, ?, ?, ?, ?, ?)',
+    [id, name, req.body.product, req.body.quality, req.body.quantity, req.body.collection],
     
     (error,results) => { 
         if(error){
