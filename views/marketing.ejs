@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+<table>
+    <tr>
+        <th>Customer id</th>
+        <th>Customer name</th>
+        <th>Commodity</th>
+        <th>Quality</th>
+        <th>Quantity in kgs</th>
+        
+    
+    </tr>
+    <% for (let i of data) {%>
+        <tr>
+            <td><%= i.customer_id%></td>
+            <td><%= i.customer_name%></td>
+            <td><%= i.commodity%></td>
+            <td><%= i.quality%></td>
+            <td><%= i.quantity%></td>
+            
+        </tr>
+    <% }%>
+
+    <form action="/order/store" method="POST">
+        <input type="text" name="id" placeholder="Member Id"><br>
+        <input type="text" name="name" placeholder="Customer name"><br>
+        <input type="text" name="product" placeholder="Commodity"><br>
+        <input type="text" name="quality" placeholder="Quality"><br>
+        <input type="text" name="quantity" placeholder="Quantity"><br>
+        <button>Add Order</button>
+    </form>
+    </body>
+</html>
