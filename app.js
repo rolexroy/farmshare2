@@ -62,7 +62,7 @@ app.post('/farmer/new', (req, res) => {
 });
 
 app.get('/aggregation',(req, res) => {
-    const query = `SELECT farmers.groupName, production.commodity, production.quality, SUM(production.expectedYield) AS quantity
+    const query = `SELECT farmers.groupName AS groupName, production.commodity, production.quality, SUM(production.expectedYield) AS quantity
     FROM farmers
     INNER JOIN production ON production.id = farmers.id
     GROUP BY  groupName, commodity, quality;`
@@ -76,6 +76,37 @@ app.get('/aggregation',(req, res) => {
         }
     );
 });
+
+app.get('/marketing', (req, res) => {
+    const query = `SELECT * FROM orders `
+    connection.query(
+        query,
+        (error, results) => {
+            console.log(results);
+            res.render('marketing' , {
+                data:results
+            });
+        }
+    );
+});
+
+app.post('/order/store', (req, res) => {
+    let id = req.body.id;
+    let name = req.body.name;
+    connection.query('INSERT INTO orders (customer_id, customer_name, commodity, quality, quantity) VALUES (?, ?, ?, ?, ? )',
+    [id, name, req.body.product, req.body.quality, req.body.quantity],
+    
+    (error,results) => { 
+        if(error){
+            console.log(error)
+        } else {
+            res.redirect('/marketing');
+            // console.log('inserted into db')
+        }
+        
+    }); 
+});
+
 app.get('/blog', (req, res) => {
     const blog = 'SELECT * FROM blog';
     connection.query(
