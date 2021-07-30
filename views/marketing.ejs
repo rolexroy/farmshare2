@@ -6,20 +6,31 @@
         <th>Commodity</th>
         <th>Quality</th>
         <th>Quantity in kgs</th>
+        <!-- <th>Collection point</th> -->
+        <th>Action</th>
         
     
     </tr>
-    <% for (let i of data) {%>
+    <% for (let i of item) {%>
         <tr>
             <td><%= i.customer_id%></td>
             <td><%= i.customer_name%></td>
             <td><%= i.commodity%></td>
             <td><%= i.quality%></td>
             <td><%= i.quantity%></td>
-            
+            <!-- <td><%= i.collection_point%></td> -->
+            <td>
+                
+                <a class = "btn edit" href="/order/<%= i.id %>">Edit</a>
+                <!-- delete button -->
+                <form action= "/remove/order/<%= i.id%>" method="post">
+                    <input class = "btn delete" type="submit" value="Delete">
+                </form>
+            </td>
         </tr>
+        
     <% }%>
-
+</table>
     <form action="/order/store" method="POST">
         <input type="text" name="id" placeholder="Member Id"><br>
         <input type="text" name="name" placeholder="Customer name"><br>

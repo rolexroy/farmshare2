@@ -1,23 +1,39 @@
 <%- include('partials/header') %>
-    <h3>Registration</h3>
-    <div class='conainer'>
-        <div>
-            <form action="/farmer/new" method="POST">
-                <input type="text" name="id" placeholder="Member Id"><br>
-                <input type="text" name="group" placeholder="Group name"><br>
-                <input type="text" name="fname" placeholder="First Name"><br>
-                <input type="text" name="lname" placeholder="Last Name"><br>
-            
-                <input type="text" name="tel" placeholder="Mobile Number"><br>
-                <input type="text" name="plot" placeholder="plot size in acres"><br>
-                <input type="text" name="plot_nature" placeholder="Nature of plot"><br>
-                <input type="text" name="valueChain" placeholder="member value chain"><br>
-                <input type="text" name="investment" placeholder="Investment in ksh"><br>
-                <input type="text" name="harvest" placeholder="Projected harvest duration in months"><br>
-                <input type="text" name="weight" placeholder="Projected harvest in Kg"><br>
-                <button>Register</button>
-            </form>
-        </div>
+    <div class='container'>
+        <h1>Farmers</h1>
+        <table>
+            <th>Farmer id</th>
+            <th>Name</th>
+            <th>Group</th>
+            <th>Mobile number</th>
+            <th>Plot Nature</th>
+            <th>Plot Size</th>
+            <th>Value Chain</th>
+            <th>Action</th>
+        <% for (item of items){ %>
+            <tr>
+                <td><%= item.id %></td>
+                <td><%= item.name %></td>
+                <td><%= item.groupName %></td>
+                <td><%= item.tel %></td>
+                <td><%= item.plotNature %></td>
+                <td><%= item.plotSize %></td>
+                <td><%= item.valueChain %></td>
+                <td>
+                <!-- <form action="/farmers/<%= item.id %>" method="post">
+                        <input type="submit" class="btn edit" value ="Edit">
+                    </form> -->
+                    <!-- edit button -->
+                    <a class = "btn edit" href="/farmers/<%= item.id %>">Edit</a>
+                    <!-- delete button -->
+                    <form action= "/delete/<%= item.id%>" method="post">
+                        <input class = "btn delete" type="submit" value="Delete">
+                    </form>
+                </td>
+            </tr>
+       <% } %>
+       
     </div>
+    <a href="#"><button>See More</button></a>
 </body>
 </html>

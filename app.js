@@ -12,7 +12,7 @@ app.set('view engine', 'ejs');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'public/uploads');
+      cb(null, './farmshare/public/uploads');
     },
     filename: (req, file, cb) => {
       const { originalname } = file;
@@ -28,21 +28,26 @@ app.use(bodyParser.urlencoded({
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'sql1pass',
+    password: '',
     database: 'farmshare'
 
 });
+connection.connect()
 
-connection.connect(function(err) {
-    if(err) {
-        console.log('error connecting: ' + err.stack);
-        return;
-    }
-});
+
 
 app.get('/', (req,res) => {
-    res.render('index');
+  connection.query('SELECT * FROM farmers', (error, results) => {
+    res.render('index',{items:results})
+  })
+  
 });
+
+app.get('/register', (req,res) => {
+   
+      res.render('register');
+    
+  });
 
 app.post('/farmer/new', (req, res) => {
     let id = req.body.id;
@@ -61,8 +66,56 @@ app.post('/farmer/new', (req, res) => {
     });
 });
 
+// edit farmers records
+app.get('/farmers/:id',(req,res) => {
+    // get route parameter (id)
+    let id = Number(req.params.id);
+
+    // if(res.locals.isLoggedIn){
+        connection.query(        
+        'SELECT * FROM farmers WHERE id = ?',[id] ,
+        (error,results) => {
+            if(results.length === 1){
+                res.render ('editfarmer' , {item : results[0]});
+            }else{
+                res.render ('error');
+            }
+        }
+    );
+    // }else{
+    //     res.redirect('/login');
+    // }
+    
+})
+
+//update farmer record
+app.post('/update/farmer/:id', (req, res) => {
+    let id = Number(req.params.id);
+    let group = req.body.group;
+    connection.query('UPDATE blog SET groupName = ?, name = ?, tel = ?, plotSize = ?, plotNature = ?, valueChain = ?, investement = ?, harvest = ?, weight = ? WHERE id = ? ',
+        [group, req.body.fname, req.body.lname, req.body.tel, req.body.plot, req.body.plot_nature, req.body.valueChain, req.body.investment, req.body.harvest, req.body.weight],
+        (error, results) => {
+            if(error){
+                console.log(error)
+            } else {
+                res.redirect('/blog');
+            } 
+        }
+    );
+});
+
+//delete farmer
+app.post('/delete/:id', (req ,res) => {
+    const id = Number(req.params.id);
+    connection.query('DELETE FROM farmers WHERE id = ?',[id], 
+        (error, results) => {
+            res.redirect('/');
+        }
+    );
+})
+
 app.get('/aggregation',(req, res) => {
-    const query = `SELECT farmers.groupName AS groupName, production.commodity, production.quality, SUM(production.expectedYield) AS quantity
+    const query = `SELECT farmers.groupName , production.commodity, production.quality, SUM(production.expectedYield) AS quantity
     FROM farmers
     INNER JOIN production ON production.id = farmers.id
     GROUP BY  groupName, commodity, quality;`
@@ -84,11 +137,34 @@ app.get('/marketing', (req, res) => {
         (error, results) => {
             console.log(results);
             res.render('marketing' , {
-                data:results
+                item:results
             });
         }
     );
 });
+
+// edit order records
+app.get('/order/:id',(req,res) => {
+    // get route parameter (id)
+    let id = Number(req.params.id);
+
+    // if(res.locals.isLoggedIn){
+        connection.query(        
+        'SELECT * FROM orders WHERE id = ?',[id] ,
+        (error,results) => {
+            if(results.length === 1){
+                res.render ('edit_order' , {data : results[0]});
+               
+            }else{
+                res.send ('error');
+            }
+        }
+    );
+    // }else{
+    //     res.redirect('/login');
+    // }
+    
+})
 
 app.post('/order/store', (req, res) => {
     let id = req.body.id;
@@ -107,6 +183,31 @@ app.post('/order/store', (req, res) => {
     }); 
 });
 
+//update order table
+app.post('/update/order/:id', (req, res) => {
+    let id = Number(req.params.id);
+    connection.query('UPDATE orders SET  customer_id = ?, commodity = ?, quality = ?, quantity = ? ',
+        [ req.body.customer_id, req.body.commodity, req.body.quality, req.body.quantity],
+        (error, results) => {
+            if(error){
+                console.log(error)
+            } else {
+                res.redirect('/marketing');
+            } 
+        }
+    );
+});
+
+//delete order
+app.post('/remove/order/:id', (req ,res) => {
+    const id = Number(req.params.id);
+    connection.query('DELETE FROM orders WHERE id = ?',[id], 
+        (error, results) => {
+            res.redirect('/marketing');
+        }
+    );
+})
+
 app.get('/blog', (req, res) => {
     const blog = 'SELECT * FROM blog';
     connection.query(
@@ -119,38 +220,19 @@ app.get('/blog', (req, res) => {
     );
 });
 
+//create blog post
 app.get('/blog/new', (req, res) => {
     res.render('create')
 });
 
-// app.post('/posts/store', upload.single('myImage'), (req, res) => {
-//     let articleName = req.body.title;
-//     let image = req.file.filename;
-//     connection.query('INSERT INTO blog (title, content, image) VALUES (?, ?, ?)',
-//     [articleName, req.body.content, image],
-    
-//     (error,results) => { 
-//         if(error){
-//             console.log(error)
-//         } else {
-//             res.redirect('/blog');
-//             // console.log('inserted into db')
-//         }
-        
-//     });
-// });
-
 //view page
 app.get('/post/:id',(req,res) => {
     // get route parameter (id)
-    
     let id = Number(req.params.id);
    
         connection.query(        
             'SELECT * FROM blog WHERE id = ? ',[id] ,
             (error,results) => {
-            //     console.log(results);
-            //   console.log(typeof id)
                  if(results.length === 1){
                     res.render ('view' , {item : results[0]});
                  } else {
@@ -197,7 +279,7 @@ app.post('/update/:id', upload.single('myImage'), (req, res) => {
     );
 });
 
-//delete item
+//delete blog
 app.post('/delete/:id', (req ,res) => {
     const id = Number(req.params.id);
     connection.query('DELETE FROM blog WHERE id = ?',[id], 
@@ -208,7 +290,7 @@ app.post('/delete/:id', (req ,res) => {
 })
 
 app.get('/production',(req,res)=>{
-    connection.query('SELECT farmers.fname,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production ON farmers.id = production.farmer_id',(error,results)=>{
+    connection.query('SELECT farmers.name,farmers.groupName,farmers.valueChain,production.expectedYield,production.commodity FROM farmers INNER JOIN production ON farmers.id = production.farmer_id',(error,results)=>{
         
         if(error){
             console.log(error)
@@ -240,8 +322,73 @@ app.post('/product/new',(req,res)=>{
 
 })
 
+//Distribution view
+app.get('/distribution',(req,res)=>{
+    connection.query('SELECT distribution.order_id, distribution.product, distribution.quality , distribution.quantity, distribution.payment, distribution.collection_point, distribution.expected_date, distribution.actual_date FROM distribution',(error,results)=>{
+        
+        if(error){
+            console.log(error)
+        } else {
+           res.render('distribution', {items:results})
+        }
+    })
+    
+})
 
+//Distribution form
+app.get('/distribution/form',(req,res)=>{
+           res.render('distribution_form')
+})
 
-app.listen(3000 , () => {
-    console.log('App listening on port 3000');
+//Distribution store form
+app.post('/distribution/store/form',(req,res)=>{
+    let id = req.body.id;
+    let product = req.body.product;
+    connection.query('INSERT INTO distribution (order_id, product, quality, quantity, payment, collection_point, expected_date, actual_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [id, product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date],
+    
+    (error,results) => { 
+        if(error){
+            console.log(error)
+        } else {
+            res.redirect('/distribution');
+            // console.log('inserted into db')
+        }
+        
+    }); 
+})
+
+//edit distribution data
+app.get('/distribution/:id', (req,res) => {
+    let id = Number(req.params.id);
+        connection.query(        
+            'SELECT * FROM distribution WHERE order_id = ? ',[id] ,
+            (error,results) => {
+                // if(results.length === 1){
+                    res.render ('edit_distribution' , {item : results[0]});
+                // } else {
+                //     res.render ('error');
+                // }
+            }
+        );
+});
+
+//update distribution record
+app.post('/update/distribution/:id', (req, res) => {
+    let id = Number(req.params.id);
+    let product = req.body.product;
+    connection.query('UPDATE distribution SET  product = ?, quality = ?, quantity = ?, payment = ?, collection_point = ?, expected_date = ?, actual_date = ? WHERE order_id = ?',
+        [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, id],
+        (error, results) => {
+            if(error){
+                console.log(error)
+            } else {
+                res.redirect('/distribution');
+            } 
+        }
+    );
+});
+
+app.listen(3080 , () => {
+    console.log('App listening on port 3080');
 });

@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+<div class="container ">
+
+    <h2>Edit Distribution Records</h2>
+
+    <form action="/update/distribution/<%= item.order_id %>" method="POST" >
+        <div class="form-content">
+            <input type="text" name="id" value ="<%= item.order_id %>" ><br>
+            <input type="text" name="product" value ="<%= item.product %>" ><br>
+            <input type="text" name="quality" value ="<%= item.quality%>" ><br>
+            <input type="text" name="quantity" value ="<%= item.quantity%>" ><br>
+    
+            <input type="text" name="payment" value ="<%= item.payment%>"><br>
+            <input type="text" name="collection_point" value ="<%= item.collection_point %>"><br>
+            <label for="">Expected payment date:</label>
+            <input type="date" name="expected_date" value ="<%= item.expected_date%>"><br>
+            <label for="">Actual payment date:</label>
+            <input type="date" name="actual_date" value ="<%= item.actual_date%>"><br>
+            <div class="form-btns">
+                <a href="/distribution" class="btn">Cancel</a>
+                <input type="submit" class="btn" value = "Save">
+            </div>
+        </div>    
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<script>
+   let content = document.getElementById('content');
+   content.value = '<%= item.content %>';
+</script>
+<%- include('partials/footer') %>

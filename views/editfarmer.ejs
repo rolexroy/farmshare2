@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+<div class="container ">
+
+    <h2>Edit Farmer Records</h2>
+
+    <form action="/update/farmer/<%= item.id %>" method="POST" >
+        <div class="form-content">
+            <input type="text" name="id" value ="<%= item.id %>" ><br>
+            <input type="text" name="group" value ="<%= item.groupName %>" ><br>
+            <input type="text" name="name" value ="<%= item.name%>" ><br>
+            <input type="text" name="tel" value ="<%= item.tel%>" ><br>
+    
+            <input type="text" name="plot" value ="<%= item.plotSize%>"><br>
+            <input type="text" name="plot_ nature" value ="<%= item.plotNature%>"><br>
+            <input type="text" name="valueChain" value ="<%= item.valueChain%>"><br>
+            <input type="text" name="investment" value ="<%= item.investment%>"><br>
+            <input type="text" name="harvest" value ="<%= item.harvestDuration%>"><br>
+            <input type="text" name="weight" value ="<%= item.weight%>"><br> 
+            <div class="form-btns">
+                <a href="/" class="btn">Cancel</a>
+                <input type="submit" class="btn" value = "Save">
+            </div>
+        </div>    
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<script>
+   let content = document.getElementById('content');
+   content.value = '<%= item.content %>';
+</script>
+<%- include('partials/footer') %>
