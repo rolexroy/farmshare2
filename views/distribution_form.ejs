@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
     <h2>Distribution form</h2>
     <form action="/distribution/store/form" method="POST">
-        <input type="text" name="id" placeholder="Order id"><br>
+        <!-- <input type="text" name="id" placeholder="Order id"><br> -->
         <input type="text" name="product" placeholder="Commodity"><br>
         <input type="text" name="quality" placeholder="Quality"><br>
         <input type="text" name="quantity" placeholder="Quantity in kgs"><br>
@@ -11,6 +11,12 @@
         <input type="date" name="expected_date" placeholder="Expected payment date"><br>
         <label for="">Actual payment date:</label>
         <input type="date" name="actual_date" placeholder="Actual payment date"><br>
+        <label for="delivery">Delivery Status: 
+            <select name="delivery">
+                <option value="Delivered">Delivered</option>
+                <option value="Pending">Pending</option>
+            </select><br>
+        </label>
         <button>Submit</button>
     </form>
     </body>

@@ -3,19 +3,25 @@
 
     <h2>Edit Distribution Records</h2>
 
-    <form action="/update/distribution/<%= item.order_id %>" method="POST" >
+    <form action="/update/distribution/<%= item[0].order_id %>" method="POST" >
         <div class="form-content">
-            <input type="text" name="id" value ="<%= item.order_id %>" ><br>
-            <input type="text" name="product" value ="<%= item.product %>" ><br>
-            <input type="text" name="quality" value ="<%= item.quality%>" ><br>
-            <input type="text" name="quantity" value ="<%= item.quantity%>" ><br>
-    
-            <input type="text" name="payment" value ="<%= item.payment%>"><br>
-            <input type="text" name="collection_point" value ="<%= item.collection_point %>"><br>
+            <input type="hidden" id="custId" name="check" value="<%=item[1]%>">
+            <input type="text" name="id" value ="<%= item[0].order_id %>" ><br>
+            <input type="text" name="product" value ="<%= item[0].product %>" ><br>
+            <input type="text" name="quality" value ="<%= item[0].quality%>" ><br>
+            <input type="text" name="quantity" value ="<%= item[0].quantity%>" ><br>
+            <input type="text" name="payment" value ="<%= item[0].payment%>"><br>
+            <input type="text" name="collection_point" value ="<%= item[0].collection_point %>"><br>
             <label for="">Expected payment date:</label>
-            <input type="date" name="expected_date" value ="<%= item.expected_date%>"><br>
+            <input type="date" name="expected_date" value ="<%= item[0].expected_date%>"><br>
             <label for="">Actual payment date:</label>
-            <input type="date" name="actual_date" value ="<%= item.actual_date%>"><br>
+            <input type="date" name="actual_date" value ="<%= item[0].actual_date%>"><br>
+            <label for="delivery">Delivery Status: 
+                <select name="delivery">
+                    <option value="Delivered">Delivered</option>
+                    <option value="Pending">Pending</option>
+                </select><br>
+            </label>
             <div class="form-btns">
                 <a href="/distribution" class="btn">Cancel</a>
                 <input type="submit" class="btn" value = "Save">

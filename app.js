@@ -34,19 +34,14 @@ const connection = mysql.createConnection({
 });
 connection.connect()
 
-
-
 app.get('/', (req,res) => {
   connection.query('SELECT * FROM farmers', (error, results) => {
     res.render('index',{items:results})
-  })
-  
+  }) 
 });
 
 app.get('/register', (req,res) => {
-   
       res.render('register');
-    
   });
 
 app.post('/farmer/new', (req, res) => {
@@ -61,8 +56,7 @@ app.post('/farmer/new', (req, res) => {
         } else {
             res.redirect('/');
             // console.log('inserted into db')
-        }
-        
+        }   
     });
 });
 
@@ -130,6 +124,77 @@ app.get('/aggregation',(req, res) => {
     );
 });
 
+app.get('/value_addition',(req, res) => {
+    const query = `SELECT * FROM value_addition`
+    connection.query(
+        query,
+        (error, results) => {
+            res.render('value_addition', {item:results});
+        }
+    ); 
+})
+
+app.post('/value/store', (req, res) => {
+    connection.query('INSERT INTO value_addition (commodity, quality, amount, final_product, valueAddedWeight) VALUES (?, ?, ?, ?, ?)',
+    [req.body.product, req.body.quality, req.body.amount, req.body.final_product, req.body.valueAddedWeight],
+    (error,results) => { 
+        if(error){
+            console.log(error)
+        } else {
+            res.redirect('/value_addition');
+        }  
+    }); 
+});
+
+// edit value added records
+app.get('/value_addition/:id',(req,res) => {
+    // get route parameter (id)
+    let id = Number(req.params.id);
+    // if(res.locals.isLoggedIn){
+        connection.query(        
+        'SELECT * FROM value_addition WHERE id = ?',[id] ,
+        (error,results) => {
+            console.log(results);
+            if(results.length === 1){
+                res.render ('editValueAddition' , {item : results[0]});
+               
+            }else{
+                // res.send ('error');
+                res.render ('editValueAddition' , {item : results[0]});
+            }
+        }
+    );
+    // }else{
+    //     res.redirect('/login');
+    // }
+    
+})
+
+//update value addition table
+app.post('/update/value_addition/:id', (req, res) => {
+    let id = Number(req.params.id);
+    connection.query('UPDATE value_addition SET  id = ?, commodity = ?, quality = ?, amount = ?, stage = ?, final_product = ?, valueAddedWeight = ? ',
+        [ req.body.id, req.body.commodity, req.body.quality, req.body.amount,req.body.stage, req.body.final_product, req.body.valueAddedWeight, req.body.quantity],
+        (error, results) => {
+            if(error){
+                console.log(error)
+            } else {
+                res.redirect('/value_addition');
+            } 
+        }
+    );
+});
+
+//delete value addition
+app.post('/remove/value_addition/:id', (req ,res) => {
+    const id = Number(req.params.id);
+    connection.query('DELETE FROM value_addition WHERE id = ?',[id], 
+        (error, results) => {
+            res.redirect('/value_addition');
+        }
+    );
+})
+
 app.get('/marketing', (req, res) => {
     const query = `SELECT * FROM orders `
     connection.query(
@@ -147,7 +212,6 @@ app.get('/marketing', (req, res) => {
 app.get('/order/:id',(req,res) => {
     // get route parameter (id)
     let id = Number(req.params.id);
-
     // if(res.locals.isLoggedIn){
         connection.query(        
         'SELECT * FROM orders WHERE id = ?',[id] ,
@@ -178,8 +242,7 @@ app.post('/order/store', (req, res) => {
         } else {
             res.redirect('/marketing');
             // console.log('inserted into db')
-        }
-        
+        }   
     }); 
 });
 
@@ -219,7 +282,6 @@ app.get('/blog', (req, res) => {
         }
     );
 });
-
 //create blog post
 app.get('/blog/new', (req, res) => {
     res.render('create')
@@ -229,7 +291,6 @@ app.get('/blog/new', (req, res) => {
 app.get('/post/:id',(req,res) => {
     // get route parameter (id)
     let id = Number(req.params.id);
-   
         connection.query(        
             'SELECT * FROM blog WHERE id = ? ',[id] ,
             (error,results) => {
@@ -240,7 +301,6 @@ app.get('/post/:id',(req,res) => {
                  }
             }
         );
-    
 });
 
 // edit page
@@ -298,38 +358,63 @@ app.get('/production',(req,res)=>{
            res.render('production',{items:results})
         }
     })
-    
 })
 
 app.post('/product/new',(req,res)=>{ 
     let id = req.body.id
     let farmer_id = req.body.farmerId
-    let commodity = req.body.commodity
+    let commodity = req.body.commodity.toLowerCase();
     let yield = req.body.yield
     let collection = req.body.collection
     let region = req.body.region
-    let harvest = req.body.harvest
-    connection.query('INSERT INTO production (id,farmer_id,commodity,expectedYield,collectionCenter,region,expectedHarvest) VALUES(?,?,?,?,?,?,?)',[id,farmer_id,commodity,yield,collection,region,harvest],
-    (error,results) =>{
+    let harvest = req.body.harvest;
+    let quality = req.body.quality;
+
+    // const query = `SELECT production.commodity, production.quality, SUM(production.expectedYield) AS quantity
+    // FROM farmers
+    // INNER JOIN production ON production.id = farmers.id
+    // GROUP BY  groupName, commodity, quality;`
+  
+    connection.query('INSERT INTO production (id, farmer_id, commodity, quality, expectedYield, collectionCenter, region) VALUES(?, ?, ?, ?, ?, ?, ?)',[id, farmer_id, commodity, quality, yield, collection, region],
+    (error, results) => {
         if(error){
             console.log(error)
         } else {
             console.log('values inserted successfully')
-            res.redirect('/')
+            res.redirect('/production')
         }
-    }
-    )
-
+    })
+    // ___________________________________________________________________________________________________________________________________
+    connection.query('UPDATE stock SET quantity = quantity + ? WHERE commodity = ? AND quality = ?',[yield, commodity, quality],  
+    (error,results) => { 
+    if(error){
+        console.log(error)
+    } else {
+        // res.redirect('/distribution');
+        // console.log('inserted into db')
+    }     
+    }); 
+  
+    connection.query('INSERT INTO stock  VALUES(?, ?, ?) WHERE commodity IS NULL',[commodity, quality, yield,],  
+    (error,results) => { 
+    if(error){
+        console.log(error)
+    } else {
+        // res.redirect('/distribution');
+        // console.log('inserted into db')
+    }     
+    }); 
 })
 
 //Distribution view
 app.get('/distribution',(req,res)=>{
-    connection.query('SELECT distribution.order_id, distribution.product, distribution.quality , distribution.quantity, distribution.payment, distribution.collection_point, distribution.expected_date, distribution.actual_date FROM distribution',(error,results)=>{
+    connection.query('SELECT distribution.order_id, distribution.product, distribution.quality , distribution.quantity, distribution.payment, distribution.collection_point, distribution.expected_date, distribution.actual_date, delivery_status FROM distribution',(error,results)=>{
         
         if(error){
             console.log(error)
         } else {
            res.render('distribution', {items:results})
+       
         }
     })
     
@@ -343,9 +428,12 @@ app.get('/distribution/form',(req,res)=>{
 //Distribution store form
 app.post('/distribution/store/form',(req,res)=>{
     let id = req.body.id;
-    let product = req.body.product;
-    connection.query('INSERT INTO distribution (order_id, product, quality, quantity, payment, collection_point, expected_date, actual_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-    [id, product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date],
+    let product = req.body.product.toLowerCase();
+    let quality = req.body.quality;
+    let quantity = req.body.quantity;
+    let delivery = req.body.delivery;
+    connection.query('INSERT INTO distribution ( product, quality, quantity, payment, collection_point, expected_date, actual_date, delivery_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery],
     
     (error,results) => { 
         if(error){
@@ -356,7 +444,19 @@ app.post('/distribution/store/form',(req,res)=>{
         }
         
     }); 
-})
+    // __________________________________________________________________________________________________________________________________
+    if(delivery === 'Delivered'){
+        connection.query('UPDATE stock SET quantity = quantity - ? WHERE commodity = ? AND quality = ?',[quantity, product, quality],  
+            (error,results) => { 
+            if(error){
+                console.log(error)
+            } else {
+                // res.redirect('/distribution');
+                // console.log('inserted into db')
+            }     
+        }); 
+    } 
+});
 
 //edit distribution data
 app.get('/distribution/:id', (req,res) => {
@@ -365,7 +465,8 @@ app.get('/distribution/:id', (req,res) => {
             'SELECT * FROM distribution WHERE order_id = ? ',[id] ,
             (error,results) => {
                 // if(results.length === 1){
-                    res.render ('edit_distribution' , {item : results[0]});
+                    let check = results[0].delivery_status == 'Delivered';
+                    res.render ('edit_distribution' , {item : [results[0], check]});
                 // } else {
                 //     res.render ('error');
                 // }
@@ -376,17 +477,35 @@ app.get('/distribution/:id', (req,res) => {
 //update distribution record
 app.post('/update/distribution/:id', (req, res) => {
     let id = Number(req.params.id);
-    let product = req.body.product;
-    connection.query('UPDATE distribution SET  product = ?, quality = ?, quantity = ?, payment = ?, collection_point = ?, expected_date = ?, actual_date = ? WHERE order_id = ?',
-        [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, id],
+    let quality = req.body.quality;
+    let quantity = req.body.quantity;
+    let product = req.body.product.toLowerCase();
+    let delivery = req.body.delivery;
+    let check = req.body.check;
+    console.log(check);
+    connection.query('UPDATE distribution SET  product = ?, quality = ?, quantity = ?, payment = ?, collection_point = ?, expected_date = ?, actual_date = ?, delivery_status = ? WHERE order_id = ?',
+        [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, id],
         (error, results) => {
             if(error){
                 console.log(error)
             } else {
                 res.redirect('/distribution');
             } 
-        }
-    );
+        });
+        // __________________________________________________________________________________________________________________________________
+       if(check === 'false'){
+            if(delivery === 'Delivered'){
+                connection.query('UPDATE stock SET quantity = quantity - ? WHERE commodity = ? AND quality = ?',[quantity, product, quality],  
+                    (error,results) => { 
+                    if(error){
+                        console.log(error)
+                    } else {
+                        // res.redirect('/distribution');
+                        // console.log('inserted into db')
+                    }     
+                }); 
+            } 
+       }
 });
 
 app.listen(3080 , () => {

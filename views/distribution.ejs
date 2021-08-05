@@ -9,6 +9,7 @@
         <th>Collection point</th>
         <th>Expected payment date</th>
         <th>Actual payment date</th>
+        <th>Delivery Status</th>
         <th>Action</th>
         
     
@@ -23,6 +24,8 @@
             <td><%= i.collection_point%></td>
             <td><%= i.expected_date %></td>
             <td><%= i.actual_date %></td>
+            <td><%= i.delivery_status %></td>
+            <td></td>
             <td>
                 <a class = "btn edit" href="/distribution/<%= i.order_id %>">Edit</a>
                 
