@@ -1,39 +1,79 @@
 <%- include('partials/header') %>
-    <div class='container'>
-        <h1>Farmers</h1>
-        <table>
-            <th>Farmer id</th>
-            <th>Name</th>
-            <th>Group</th>
-            <th>Mobile number</th>
-            <th>Plot Nature</th>
-            <th>Plot Size</th>
-            <th>Value Chain</th>
-            <th>Action</th>
-        <% for (item of items){ %>
-            <tr>
-                <td><%= item.id %></td>
-                <td><%= item.name %></td>
-                <td><%= item.groupName %></td>
-                <td><%= item.tel %></td>
-                <td><%= item.plotNature %></td>
-                <td><%= item.plotSize %></td>
-                <td><%= item.valueChain %></td>
-                <td>
-                <!-- <form action="/farmers/<%= item.id %>" method="post">
-                        <input type="submit" class="btn edit" value ="Edit">
-                    </form> -->
-                    <!-- edit button -->
-                    <a class = "btn edit" href="/farmers/<%= item.id %>">Edit</a>
-                    <!-- delete button -->
-                    <form action= "/delete/<%= item.id%>" method="post">
-                        <input class = "btn delete" type="submit" value="Delete">
-                    </form>
-                </td>
-            </tr>
-       <% } %>
+    <h3>Registration</h3>
+    <span class="iconify" data-icon="bx:bxs-user" data-inline="false"></span>
+
+    <a href="/logout">Logout</a>
+   
+    <div class='containers'>
        
+            <div class="sidebar">
+                <button class="button__link btn"><a href="/farmers" class="link">Farmers</a></button>
+                <button class="button__link btn"><a href="/production" class="link">Production</a></button>
+                <button class="button__link btn"><a href="/orders" class="link">Orders</a></button>
+                <button class="button__link btn"><a href="/aggregation" class="link">Aggregation</a></button>
+                <button class="button__link btn"><a href="/marketing" class="link">Marketing</a></button>
+                
+            </div>
+            <div>
+                <button class="button__link"><a href="/register" class="link">Add farmer</a></button>
+            </div>
+            <div>
+                <canvas id="myChart"></canvas>
+              </div>
+              
+           
+           
+      
+            
+        
     </div>
-    <a href="#"><button>See More</button></a>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      
+        // <block:setup:1>
+const labels = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+];
+const data = {
+  labels: labels,
+  datasets: [{
+    label: 'My First dataset',
+    backgroundColor: 'rgb(255, 99, 132)',
+    borderColor: 'rgb(255, 99, 132)',
+    data: [0, 10, 5, 2, 20, 30, 45],
+  }]
+};
+// </block:setup>
+
+// <block:config:0>
+const config = {
+  type: 'line',
+  data: data,
+  options: {}
+};
+// </block:config>
+
+module.exports = {
+  actions: [],
+  config: config,
+};
+
+    </script>
+    <script>
+        
+
+  var myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+</script>
+
+    </script>
+
 </body>
 </html>

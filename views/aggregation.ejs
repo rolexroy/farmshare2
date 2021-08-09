@@ -1,21 +1,47 @@
 <%- include('partials/header') %>
+<div class="containers">
+    <div class="sidebar">
+        <button class="button__link btn"><a href="/farmers" class="link">Farmers</a></button>
+        <button class="button__link btn"><a href="/production" class="link">Production</a></button>
+        <button class="button__link btn"><a href="/orders" class="link">Orders</a></button>
+        <button class="button__link btn"><a href="/aggregation" class="link">Aggregation</a></button>
+        <button class="button__link btn"><a href="/marketing" class="link">Marketing</a></button>
+        
+      </div>
+      <div class="table thead-dark"></div>
+</div>
+
+
+
    
-    <table>
-            <tr>
-                <th>Group Name</th>
-                <th>Commodity</th>
-                <th>Quality</th>
-                <th>Quantity</th>
-            </tr>
-            <%for(let i of data) {%>
-                <tr>
-                    <td><%= i.groupName %></td>
-                    <td><%= i.commodity %></td>
-                    <td><%= i.quality %></td>
-                    <td><%= i.quantity%></td>   
-                </tr>
-            <% } %> 
-            </td> 
-    </table>
+    
+
+    <script type="text/javascript" src="dist/js/tabulator.min.js"></script>
+    <script type="text/javascript" src="dist/js/jquery_wrapper.min.js"></script>
+    <script>
+    
+
+var table = new Tabulator(".table", {
+ 	height:'auto', // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+ 	
+    ajaxURL:'/aggregation.json', //load data
+ 	// layout:"fitColumns", //fit columns to width of table (optional)
+ 	columns:[ //Define Table Columns
+	
+     
+	 	{title:"GroupName", field:"groupName", hozAlign:"left",headerFilter:"input"},
+	 	{title:"Commodity", field:"commodity"},
+	 	
+         {title:"Quality", field:"quality"},
+         {title:"Quantity", field:"quantity"},
+       
+     
+ 	],
+ 	rowClick:function(e, row){ //trigger an alert message when the row is clicked
+ 		alert("Row " + row.getData().id + " Clicked!!!!");
+ 	},
+});
+
+    </script>
 </body>
 </html>

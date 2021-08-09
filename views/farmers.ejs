@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Farmers table</title>
+
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+   
+   <!-- <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet"> -->
+   <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body>
+    <div class="containers">
+      <div class="sidebar">
+        <button class="button__link btn"><a href="/farmers" class="link">Farmers</a></button>
+        <button class="button__link btn"><a href="/production" class="link">Production</a></button>
+        <button class="button__link btn"><a href="/orders" class="link">Orders</a></button>
+        <button class="button__link btn"><a href="/aggregation" class="link">Aggregation</a></button>
+        <button class="button__link btn"><a href="/marketing" class="link">Marketing</a></button>
+        
+      </div>
+      <div class="table thead-dark table-bordered">
+
+
+        
+
+      </div>
+    
+      
+    </div>
+   
+    <script type="text/javascript" src="dist/js/tabulator.min.js"></script>
+    <script type="text/javascript" src="dist/js/jquery_wrapper.min.js"></script>
+    <script>
+    
+
+var table = new Tabulator(".table", {
+ 	height:'auto', // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+ 	
+    ajaxURL:'/farmers.json', //load data
+ 	// layout:"fitColumns", //fit columns to width of table (optional)
+ 	columns:[ 	
+    {title:"Member Id", field:"id"},
+    {title:"Name", field:"name", width:150},
+	 	{title:"GroupName", field:"groupName", hozAlign:"left",headerFilter:"input"},
+	 	{title:"Telephone Number", field:"tel"},
+	 	{title:"Plot Size", field:"plotsize", sorter:"date", hozAlign:"center"},
+    {title:"Plot Nature", field:"plotnature"},
+    {title:"Value Chain", field:"valuechain"},
+    {title:"Investment(in Ksh.)", field:"investement"},
+    {title:"Harvest(in months)", field:"harvest"},
+    {title:"Weight(in kg)", field:"weight"},
+  ],
+ 	rowClick:function(e, row){ //trigger an alert message when the row is clicked
+ 		alert("Row " + row.getData().id + " Clicked!!!!");
+ 	},
+});
+
+    </script>
+
+   </body>
+   </html>

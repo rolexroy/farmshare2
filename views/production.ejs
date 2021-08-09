@@ -1,63 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Production table</h1>
-    <form action="/product/new" METHOD="POST">
-        <label for="">
-            <input type="text" name="id">
-        </label>
-        <label for="">Farmer
-            <input type="text" name="farmerId">
-        </label>
-        <label for="">commodity
-            <input type="text" name="commodity">
-        </label>
-        <label for="">Actual Yield
-            <input type="text" name="yield">
-        </label>
-        <label for="">Collection Center
-            <input type="text" name="collection">
-        </label>
-        <label for="">Region
-            <input type="text" name="region">
-        </label>
-        <label for="">Expected harvest date
-            <input type="date" name="harvest">
-        </label>
-        <label>Quality: 
-            <select name="quality">
-                <option value="Grade 1">Grade 1</option>
-                <option value="Grade 2">Grade 2</option>
-                <option value="Grade 3">Grade 3</option>
-                <option value="Reject">Reject</option>
-            </select><br>
-        </label>
+<%- include('partials/header') %>
+    
+    
+    <div class="containers">
+        <div class="table-container">
+            <div class="table thead-dark"></div>
+        </div>
         
-       
-        <input type="submit" value="submit">
-
+        <div class="production-details">
+            <h2>Production Form</h2>
+            <form action ="/product/new" method="POST">
+                <div class="form-group row">
+                  <label for="inputEmail4" class="col-sm-2 col-form-label">Production Id</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputEmail4" name="id">
+                  </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputId4" class="col-sm-2 col-form-label">Farmer Id</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputId4" name="farmerId">
+                    </div>
+                    
+                </div>
+                
+                <div class="form-group row">
+                  <label for="commodity" class="col-sm-2 col-form-label">Commodity</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="commodity" name="commodity">
+                  </div>
+                  
+                </div>
+                <div class="form-group row">
+                  <label for="inputAddress2" class="col-sm-2 col-form-label">Yield(in Kg)</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputAddress2" name="yield">
+                  </div>
+                  
+                </div>
+                <div class="form-group row">
+                    <label for="inputCity" class="col-sm-2 col-form-label">Collection Center</label>
+                  <div class="col-md-10">
+                    
+                    <input type="text" class="form-control" id="inputCity" name="collection">
+                  </div>
+                </div>
+                  <div class="form-group row">
+                    <label for="inputState" class="col-sm-2 col-form-label">Quality</label>
+                    <div class="col-md-10">
+                    <select id="inputState" class="form-control" name="quality">
+                      <option selected>Choose</option>
+                        <option value="Grade 1">Grade 1</option>
+                      <option value="Grade 2">Grade 2</option>
+                      <option value="Grade 3">Grade 3</option>
+                      <option value="reject">Reject</option><option>...</option>
+                    </select>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputZip" class="col-sm-2 col-form-label">Region</label>
+                    <div class="col-md-10">
+                    <input type="text" class="form-control" id="inputZip" name="region">
+                    </div>
+                  </div>
+                <div class="form-group row">
+                    <label for="submit"class="col-sm-2 col-form-label"></label>
+                    <div class="col-md-10">
+                        <button type="submit" class="btn">Submit</button>
+                    </div>
+                </div>
+                  
+                </div>
+               
+                
+              </form>
+            
+           
+              
+                
+               
         
+                
+        
+            </form> -->
+        </div>
+    </div>
+    
+   
+     
 
-    </form>
-    <h2>Production Details</h2>
-    <ul>
-    <% for(let item of items){ %>
-        <li>  <%= item.fname%> </li>
-        <li> <%= item.groupName%> </li>
-        <li>  <%= item.expecteYield%> </li>
-        <li>  <%= item.valuechain%> </li>
-        <li>  <%= item.commodity%> </li>
-       
+     </table> -->
+   
+     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-   <% } %>
-    </ul>
-
+     <script type="text/javascript" src="dist/js/tabulator.min.js"></script>
+     <script type="text/javascript" src="dist/js/jquery_wrapper.min.js"></script>
+     <script>
+     
+ 
+ var table = new Tabulator(".table", {
+      height:'auto', // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+      
+     ajaxURL:'/production.json', //load data
+      // layout:"fitColumns", //fit columns to width of table (optional)
+      columns:[ //Define Table Columns
+     
+      
+          {title:"Name", field:"name", hozAlign:"left"},
+          {title:"Group Name", field:"groupname",headerFilter:'input'},
+          {title:"Value Chain", field:"valuechain",headerFilter:'input'},
+          
+          {title:"Yield(in Kg)", field:"expectedYield"},
+          {title:"commodity", field:"commodity",headerFilter:'input'},
+        
+      
+      ],
+      rowClick:function(e, row){ //trigger an alert message when the row is clicked
+          alert("Row " + row.getData().id + " Clicked!!!!");
+      },
+ });
+ </script>
 
 </body>
 </html>
