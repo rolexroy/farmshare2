@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<table>
+    <tr>
+        <th>Order id</th>
+        <th>Commodity</th>
+        <th>Quality</th>
+        <th>Quantity in kgs</th>
+        <th>Payment</th>
+        <th>Collection point</th>
+        <th>Expected payment date</th>
+        <th>Actual payment date</th>
+        <th>Delivery Status</th>
+        <th>Action</th>
+        
+    
+    </tr>
+    <% for (let i of items) {%>
+        <tr>
+            <td><%= i.order_id%></td>
+            <td><%= i.product%></td>
+            <td><%= i.quality%></td>
+            <td><%= i.quantity%></td>
+            <td><%= i.payment%></td>
+            <td><%= i.collection_point%></td>
+            <td><%= i.expected_date %></td>
+            <td><%= i.actual_date %></td>
+            <td><%= i.delivery_status %></td>
+            <td></td>
+            <td>
+                <a class = "btn edit" href="/distribution/<%= i.order_id %>">Edit</a>
+                
+            </td>
+        </tr>
+    <% }%>
+</table>
+
+    </body>
+</html>

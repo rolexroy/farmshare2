@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+<table>
+    <tr>
+        <th>Produce</th>
+        <th>Quality</th>        
+        <th>Quantity</th>
+        <th>Finished Product</th>
+        <th>Final weight</th>
+        <th>Action</th>
+        
+    
+    </tr>  
+    <% for (let i of item) {%>
+        <tr>
+            <td><%= i.commodity %></td>
+            <td><%= i.quality %></td>
+            <td><%= i.amount %></td>
+            <td><%= i.final_product %></td>
+            <td><%= i.valueAddedWeight %></td>
+            <td>
+                <a class = "btn edit" href="/value_addition/<%= i.id %>">Edit</a>
+                <!-- delete button -->
+                <form action= "/remove/value_addition/<%= i.id%>" method="post">
+                    <input class = "btn delete" type="submit" value="Delete">
+                </form>
+            </td>
+        </tr>
+        
+    <% }%>
+ 
+</table>
+    <form action="/value/store" method="POST">
+        <input type="text" name="product" placeholder="Commodity"><br>
+        <input type="text" name="quality" placeholder="Quality"><br>
+        <input type="text" name="amount" placeholder="Quantity in kgs"><br>
+        <label for="stage">Stage: 
+            <select name=”stage”>
+                <option value=”Primary”>Primary</option>
+                <option value=”Secondary”>Secondary</option>
+            </select><br>
+        </label>
+        <input type="text" name="final_product" placeholder="Finished product"><br>
+        <input type="text" name="valueAddedWeight" placeholder="value added weight"><br>
+        <button>Submit</button>
+    </form>
+    </body>
+</html>

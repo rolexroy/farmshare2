@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<div class="container ">
+
+    <h2>Edit Order Records</h2>
+
+    <form action="/update/order/<%= data.id %>" method="POST" >
+        <div class="form-content">
+            <!-- <input type="text" name="id" value ="<%= data.id %>" ><br> -->
+            <input type="text" name="customer_id" value ="<%= data.customer_id %>"><br>
+            <input type="text" name="commodity" value ="<%= data.commodity %>"><br>
+            <input type="text" name="quality" value ="<%= data.quality %>"><br>
+            <input type="text" name="quantity" value ="<%= data.quantity %>"><br>
+            <!-- <input type="text" name="collection" value ="<%= data.collection_point %>"><br> -->
+            <div class="form-btns">
+                <a href="/" class="btn">Cancel</a>
+                <input type="submit" class="btn" value = "Save">
+            </div>
+        </div>    
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+
+<%- include('partials/footer') %>

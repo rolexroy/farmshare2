@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<div class="container ">
+
+    <h2>Edit Value Addition</h2>
+
+    <form action="/update/value_addition/<%= item.id %>" method="POST" >
+        <div class="form-content">
+            <label for="id">Id: 
+                <input type="text" name="id" value ="<%= item.id %>" ><br>
+            </label>
+            <label for="commodity">Produce:
+                <input type="text" name="commodity" value ="<%= item.commodity %>" ><br>
+            </label>
+            <label for="quality">Quality:
+                <input type="text" name="quality" value ="<%= item.quality%>" ><br>
+            </label>
+            <label for="amount">Amount:
+                <input type="text" name="amount" value ="<%= item.amount%>" ><br>
+            </label>
+            <label for="stage">Stage:
+                <input type="text" name="stage" value ="<%= item.stage%>"><br>
+            </label>
+            <label for="final_product">Final product:
+                <input type="text" name="final_product" value ="<%= item.final_product%>"><br>
+            </label>
+            <label for="valueAddedWeight">Final weight:
+                <input type="text" name="valueAddedWeight" value ="<%= item.valueAddedWeight%>"><br>
+            </label>
+
+            <div class="form-btns">
+                <a href="/value_addition" class="btn">Cancel</a>
+                <input type="submit" class="btn" value = "Save">
+            </div>
+        </div>    
+    </form>
+</div>
+
+<%- include('partials/footer') %>

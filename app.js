@@ -74,6 +74,7 @@ app.get('/', (req,res) => {
         res.render('index');
     } else {
          res.sendStatus(401)
+         
     }
 });
 
