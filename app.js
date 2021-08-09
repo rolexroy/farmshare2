@@ -1,11 +1,24 @@
 const express = require("express");
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
+const session = require('express-session')
+const bcrypt = require('bcrypt')
 const ejs = require('ejs');
 const multer = require('multer');
 const uuid = require('uuid').v4;
 
+
+
 const app = express();
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie:{
+        maxAge:60*60*24
+    }
+
+}))
 app.use(express.static('public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
@@ -32,23 +45,44 @@ const connection = mysql.createConnection({
     database: 'farmshare'
 
 });
+connection.connect()
 
-connection.connect(function(err) {
-    if(err) {
-        console.log('error connecting: ' + err.stack);
-        return;
-    }
-});
+
+
+  app.use((req,res,next)=>{
+    if(req.session.userId === undefined){
+        res.locals.isLoggedIn = false;
+        console.log('you are not logged in')
+    } else {
+    res.locals.isLoggedIn = true
+        res.locals.email = req.session.email
+        console.log('logged in')
+        }
+     next()
+})
+
+
+// connection.connect(function(err) {
+//     if(err) {
+//         console.log('error connecting: ' + err.stack);
+//         return;
+//     }
+// });
 
 app.get('/', (req,res) => {
-    res.render('index');
+    if(res.locals.isLoggedIn){
+        res.render('index');
+    } else {
+         res.sendStatus(401)
+    }
 });
 
 app.post('/farmer/new', (req, res) => {
     let id = req.body.id;
     let group = req.body.group;
-    connection.query('INSERT INTO farmers (groupName, fname, lname, tel, plotSize, plotNature, valueChain, investement, harvest, weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [group, req.body.fname, req.body.lname, req.body.tel, req.body.plot, req.body.plot_nature, req.body.valueChain, req.body.investment, req.body.harvest, req.body.weight],
+    if(res.locals.isLoggedIn){
+        connection.query('INSERT INTO farmers (groupName, name, tel, plotSize, plotNature, valueChain, investement, harvest, weight) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)',
+    [group, req.body.name, req.body.tel, req.body.plot, req.body.plot_nature, req.body.valueChain, req.body.investment, req.body.harvest, req.body.weight],
     
     (error,results) => { 
         if(error){
@@ -59,8 +93,16 @@ app.post('/farmer/new', (req, res) => {
         }
         
     });
+    } else {
+        res.redirect('/signin')
+    }
+    
 });
+//register farmer 
 
+app.get('/register',(req,res)=>{
+    res.render('register')
+})
 app.get('/aggregation',(req, res) => {
     const query = `SELECT farmers.groupName AS groupName, production.commodity, production.quality, SUM(production.expectedYield) AS quantity
     FROM farmers
@@ -69,7 +111,7 @@ app.get('/aggregation',(req, res) => {
     connection.query(
         query,
         (error, results) => {
-            console.log(results);
+            
             res.render('aggregation' , {
                 data:results
             });
@@ -77,34 +119,92 @@ app.get('/aggregation',(req, res) => {
     );
 });
 
+//aggregation json
+
+app.get('/aggregation.json',(req,res)=>{
+    const query = `SELECT farmers.groupName AS groupName, production.commodity, production.quality, SUM(production.expectedYield) AS quantity
+    FROM farmers
+    INNER JOIN production ON production.id = farmers.id
+    GROUP BY  groupName, commodity, quality;`
+    
+    connection.query(query,(error, results) => {
+        res.json(results);
+        }
+    );
+})
+
+//get farmers
+
+app.get('/farmers',(req,res)=>{
+    if(res.locals.isLoggedIn){
+        connection.query('SELECT * FROM  farmers',(error,results)=>{
+            res.render('farmers',{items:results})
+        })
+    } else {
+        res.redirect('/signin')
+    }
+   
+})
+
+//json farmers
+
+app.get('/farmers.json',(req,res)=>{
+    connection.query('SELECT * FROM farmers',(error,results)=>{
+        res.json(results)
+    })
+})
+
+
 app.get('/marketing', (req, res) => {
-    const query = `SELECT * FROM orders `
+    const query = `SELECT * FROM order_table `
+    if(res.locals.isLoggedIn){
+        connection.query(
+            query,
+            (error, results) => {
+                console.log(results);
+                res.render('marketing' , {
+                    data:results
+                });
+            }
+        );
+    } else {
+        res.redirect('/signin')
+    }
+    
+});
+
+//marketing json
+app.get('/marketing.json', (req, res) => {
+    const query = `SELECT * FROM order_table `
     connection.query(
         query,
         (error, results) => {
-            console.log(results);
-            res.render('marketing' , {
-                data:results
-            });
+           res.json(results)
         }
     );
 });
 
+
 app.post('/order/store', (req, res) => {
     let id = req.body.id;
     let name = req.body.name;
-    connection.query('INSERT INTO orders (customer_id, customer_name, commodity, quality, quantity) VALUES (?, ?, ?, ?, ? )',
-    [id, name, req.body.product, req.body.quality, req.body.quantity],
-    
-    (error,results) => { 
-        if(error){
-            console.log(error)
-        } else {
-            res.redirect('/marketing');
-            // console.log('inserted into db')
-        }
+    if(res.locals.isLoggedIn){
+        connection.query('INSERT INTO order_table (id,commodity, quality,quantity,name) VALUES (?, ?, ?, ?, ? )',
+        [id,req.body.product, req.body.quality, req.body.quantity,name],
         
-    }); 
+        (error,results) => { 
+            if(error){
+                console.log(error)
+            } else {
+                res.redirect('/marketing');
+                // console.log('inserted into db')
+            }
+            
+        }); 
+    } else {
+        res.redirect('/signin')
+    }
+   
 });
 
 app.get('/blog', (req, res) => {
@@ -208,26 +308,44 @@ app.post('/delete/:id', (req ,res) => {
 })
 
 app.get('/production',(req,res)=>{
-    connection.query('SELECT farmers.fname,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production ON farmers.id = production.farmer_id',(error,results)=>{
+    if(res.locals.isLoggedIn){
+        connection.query('SELECT farmers.name,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production',(error,results)=>{
         
-        if(error){
-            console.log(error)
-        } else {
-           res.render('production',{items:results})
-        }
+            if(error){
+                console.log(error)
+            } else {
+               res.render('production')
+            }
+        })
+    } else {
+        res.redirect('/signin')
+    }
+   
+    
+})
+
+//production json
+app.get('/production.json',(req,res)=>{
+    connection.query('SELECT farmers.name,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production',(error,results)=>{
+        res.json(results)
+        
     })
     
 })
 
+
+
 app.post('/product/new',(req,res)=>{ 
-    let id = req.body.id
+    if(res.locals.isLoggedIn){
+        let id = req.body.id
     let farmer_id = req.body.farmerId
     let commodity = req.body.commodity
     let yield = req.body.yield
     let collection = req.body.collection
     let region = req.body.region
-    let harvest = req.body.harvest
-    connection.query('INSERT INTO production (id,farmer_id,commodity,expectedYield,collectionCenter,region,expectedHarvest) VALUES(?,?,?,?,?,?,?)',[id,farmer_id,commodity,yield,collection,region,harvest],
+    let quality = req.body.quality
+    
+    connection.query('INSERT INTO production (id,farmer_id,commodity,expectedYield,collectionCenter,region,quality) VALUES(?,?,?,?,?,?,?)',[id,farmer_id,commodity,yield,collection,region,quality],
     (error,results) =>{
         if(error){
             console.log(error)
@@ -237,11 +355,60 @@ app.post('/product/new',(req,res)=>{
         }
     }
     )
+    } else {
+        res.redirect('/signin')
+    }
+    
 
 })
 
+//signup
+app.get('/signup',(req,res)=>{
+    res.render('signup')
+})
+app.post('/signup',(req,res)=>{
+    let password = req.body.password
+    let name = req.body.name
+    bcrypt.hash(password,10,(error,hash)=>{
+        connection.query('INSERT INTO user (name,password) VALUES (?,?)',[name,hash],(error,results)=>{
+            if(error){
+                console.log(error)
+            } else {
+                res.redirect('/signin')
+            }
+        })
+    })
+  
+})
 
+app.get('/signin',(req,res)=>{
+    res.render('signin')
+})
+app.post('/signin',(req,res)=>{
+    let name = req.body.name
+    let password = req.body.password
+    connection.query('SELECT * FROM user where name = ?',name,(error,results)=>{
+        bcrypt.compare(password,results[0].password,(error,isTrue)=>{
+           
+            if(isTrue){
+                req.session.userId = results[0].id
+                res.redirect('/')
+               
+            } else {
+                res.redirect('/signin')
+                
+            }
+        })
+    })
+})
 
+//logout
+
+app.get('/logout',(req,res)=>{
+    req.session.destroy(function(err) {
+        res.redirect('/signin')
+      })
+})
 app.listen(3000 , () => {
     console.log('App listening on port 3000');
 });

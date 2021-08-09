@@ -1,32 +1,90 @@
 <%- include('partials/header') %>
-<table>
-    <tr>
-        <th>Customer id</th>
-        <th>Customer name</th>
-        <th>Commodity</th>
-        <th>Quality</th>
-        <th>Quantity in kgs</th>
-        
-    
-    </tr>
-    <% for (let i of data) {%>
-        <tr>
-            <td><%= i.customer_id%></td>
-            <td><%= i.customer_name%></td>
-            <td><%= i.commodity%></td>
-            <td><%= i.quality%></td>
-            <td><%= i.quantity%></td>
+<div class="containers">
+    <div class="table thead-dark"></div>
+    <div class="production-details">
+        <form action="/order/store" method="POST">
+            <h2>Customer Details</h2>
+            <!-- <div class="form-group row">
+                <label for="inputEmail4" class="col-sm-2 col-form-label">Customer Id</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputEmail4" name="id">
+                </div>
+            </div> -->
+            <div class="form-group row">
+                <label for="inputName4" class="col-sm-2 col-form-label">Customer Name</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputName4" name="name">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputCommodity4" class="col-sm-2 col-form-label">Commodity</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputCommodity4" name="product">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputQuality4" class="col-sm-2 col-form-label">Quality</label>
+                <div class="col-sm-10">
+                  <select id="inputState" class="form-control" name="quality">
+                    <option selected>Select</option>
+                    <option value="Grade 1">Grade 1</option>
+                    <option value="Grade 2">Grade 2</option>
+                    <option value="Grade 3">Grade 3</option>
+                   <option>...</option>
+                  </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputQuantity4" class="col-sm-2 col-form-label">Quantity</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputQuantity4" name="quantity">
+                </div>
+           </div>
+           <div class="form-group row">
+            <label for="submit"class="col-sm-2 col-form-label"></label>
+            <div class="col-md-10">
+                <button type="submit" class="btn">Add Order</button>
+            </div>
+        </div>
             
-        </tr>
-    <% }%>
+            
+           
+           
+        </form>
+    </div>
+</div>
 
-    <form action="/order/store" method="POST">
-        <input type="text" name="id" placeholder="Member Id"><br>
-        <input type="text" name="name" placeholder="Customer name"><br>
-        <input type="text" name="product" placeholder="Commodity"><br>
-        <input type="text" name="quality" placeholder="Quality"><br>
-        <input type="text" name="quantity" placeholder="Quantity"><br>
-        <button>Add Order</button>
-    </form>
+    
     </body>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="dist/js/tabulator.min.js"></script>
+    <script type="text/javascript" src="dist/js/jquery_wrapper.min.js"></script>
+
+    <script>
+        var table = new Tabulator(".table", {
+      height:'auto', // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+      
+     ajaxURL:'/marketing.json', //load data
+      layout:"fitColumns", //fit columns to width of table (optional)
+      columns:[ //Define Table Columns
+     
+      
+          
+          {title:"Customer Name", field:"name"},
+          {title:"Commodity", field:"commodity",headerFilter:'input'},
+          {title:"Quality", field:"quality",headerFilter:'input'},
+          
+          {title:"Quantity", field:"quantity"},
+          
+        
+      
+      ],
+      rowClick:function(e, row){ //trigger an alert message when the row is clicked
+          alert("Row " + row.getData().id + " Clicked!!!!");
+      },
+ });
+    </script>
 </html>
