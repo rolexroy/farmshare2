@@ -200,7 +200,6 @@ app.get('/marketing', (req, res) => {
     connection.query(
         query,
         (error, results) => {
-            console.log(results);
             res.render('marketing' , {
                 item:results
             });
@@ -422,7 +421,14 @@ app.get('/distribution',(req,res)=>{
 
 //Distribution form
 app.get('/distribution/form',(req,res)=>{
-           res.render('distribution_form')
+    connection.query('SELECT stock.groupName FROM stock',(error,results)=>{
+        
+        if(error){
+            console.log(error)
+        } else {
+           res.render('distribution_form',{items:results})
+        }
+    })
 })
 
 //Distribution store form
@@ -432,8 +438,25 @@ app.post('/distribution/store/form',(req,res)=>{
     let quality = req.body.quality;
     let quantity = req.body.quantity;
     let delivery = req.body.delivery;
-    connection.query('INSERT INTO distribution ( product, quality, quantity, payment, collection_point, expected_date, actual_date, delivery_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-    [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery],
+    let groupName = req.body.groupName;
+   
+    
+    connection.query('SELECT stock.quantity FROM stock WHERE groupName = ? AND commodity = ? AND quality = ?',
+    [groupName, product, quality ],
+    
+    (error,results) => { 
+        if(error){
+            console.log(error)
+        } else {
+            // function stock(){
+                console.log( results);
+            // }
+        } 
+    }); 
+    // console.log(stock());
+    // _____________________________________________________________________________________________________________________________________
+    connection.query('INSERT INTO distribution ( product, quality, quantity, payment, collection_point, expected_date, actual_date, delivery_status, groupName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, groupName],
     
     (error,results) => { 
         if(error){
@@ -446,7 +469,7 @@ app.post('/distribution/store/form',(req,res)=>{
     }); 
     // __________________________________________________________________________________________________________________________________
     if(delivery === 'Delivered'){
-        connection.query('UPDATE stock SET quantity = quantity - ? WHERE commodity = ? AND quality = ?',[quantity, product, quality],  
+        connection.query('UPDATE stock SET quantity = quantity - ? WHERE groupName= ? AND commodity = ? AND quality = ?',[quantity, groupName, product, quality],  
             (error,results) => { 
             if(error){
                 console.log(error)
@@ -482,7 +505,8 @@ app.post('/update/distribution/:id', (req, res) => {
     let product = req.body.product.toLowerCase();
     let delivery = req.body.delivery;
     let check = req.body.check;
-    console.log(check);
+    let value = req.body.initial_qty;
+    console.log(value);
     connection.query('UPDATE distribution SET  product = ?, quality = ?, quantity = ?, payment = ?, collection_point = ?, expected_date = ?, actual_date = ?, delivery_status = ? WHERE order_id = ?',
         [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, id],
         (error, results) => {
@@ -495,7 +519,27 @@ app.post('/update/distribution/:id', (req, res) => {
         // __________________________________________________________________________________________________________________________________
        if(check === 'false'){
             if(delivery === 'Delivered'){
-                connection.query('UPDATE stock SET quantity = quantity - ? WHERE commodity = ? AND quality = ?',[quantity, product, quality],  
+                connection.query('UPDATE stock SET quantity = quantity - ? WHERE commodity = ? AND quality = ?',[ quantity, product, quality],  
+                    (error,results) => { 
+                    if(error){
+                        console.log(error)
+                    } else {
+                    }     
+                }); 
+            } 
+       } else if(check === 'true'){
+            if(delivery === 'Delivered'){
+                connection.query('UPDATE stock SET quantity = quantity + ? - ? WHERE commodity = ? AND quality = ?',[value, quantity, product, quality],  
+                    (error,results) => { 
+                    if(error){
+                        console.log(error)
+                    } else {
+                    }     
+                }); 
+            } 
+       } else {
+            if(delivery === 'Pending'){
+                connection.query('UPDATE stock SET quantity = quantity + ? WHERE commodity = ? AND quality = ?',[value, product, quality],  
                     (error,results) => { 
                     if(error){
                         console.log(error)

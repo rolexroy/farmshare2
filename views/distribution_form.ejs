@@ -17,7 +17,20 @@
                 <option value="Pending">Pending</option>
             </select><br>
         </label>
+        
+        <label for="groupName">Group Name: 
+            <select name="groupName">
+              
+                
+
+                <%for (let item of items){ %>
+                    
+                    <option value="<%= item.groupName %>"><%= item.groupName %></option>
+                <%}%>
+            </select><br>
+        </label>
         <button>Submit</button>
     </form>
+    
     </body>
 </html>
