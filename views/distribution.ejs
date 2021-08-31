@@ -1,4 +1,12 @@
 <%- include('partials/header') %>
+<div class="containers">
+    <%- include('partials/sidebar') %>
+<div class="table thead-dark">
+    <% let totalPayment = 0 %>
+    <% for(let item of items) {%>
+    <% totalPayment += Number(item.payment) %>
+    <% }%>
+   
 <table>
     <tr>
         <th>Order id</th>
@@ -7,13 +15,14 @@
         <th>Quantity in kgs</th>
         <th>Payment</th>
         <th>Collection point</th>
-        <th>Expected payment date</th>
-        <th>Actual payment date</th>
+       
         <th>Delivery Status</th>
+        <th>Sum</th>
         <th>Action</th>
-        
+       
     
     </tr>
+    
     <% for (let i of items) {%>
         <tr>
             <td><%= i.order_id%></td>
@@ -22,10 +31,10 @@
             <td><%= i.quantity%></td>
             <td><%= i.payment%></td>
             <td><%= i.collection_point%></td>
-            <td><%= i.expected_date %></td>
-            <td><%= i.actual_date %></td>
+           
             <td><%= i.delivery_status %></td>
-            <td></td>
+            <%= totalPayment %>
+            
             <td>
                 <a class = "btn edit" href="/distribution/<%= i.order_id %>">Edit</a>
                 
@@ -33,6 +42,40 @@
         </tr>
     <% }%>
 </table>
+</div>
+<div class="form">
+    <form action="/distribution/store/form" method="POST">
+        <!-- <input type="text" name="id" placeholder="Order id"><br> -->
+        <input type="text" name="product" placeholder="Commodity"><br>
+        <input type="text" name="quality" placeholder="Quality"><br>
+        <input type="text" name="quantity" placeholder="Quantity in kgs"><br>
+        <input type="text" name="payment" placeholder="Payment"><br>
+        <input type="text" name="collection_point" placeholder="Collection point"><br>
+        <label for="">Expected payment date:</label>
+        <input type="date" name="expected_date" placeholder="Expected payment date"><br>
+        <label for="">Actual payment date:</label>
+        <input type="date" name="actual_date" placeholder="Actual payment date"><br>
+        <label for="delivery">Delivery Status: 
+            <select name="delivery">
+                <option value="Delivered">Delivered</option>
+                <option value="Pending">Pending</option>
+            </select><br>
+        </label>
+        
+        <label for="groupName">Group Name: 
+            <select name="groupName">
+              
+                
 
+                <%for (let item of items){ %>
+                    
+                    <option value="<%= item.groupName %>"><%= item.groupName %></option>
+                <%}%>
+            </select><br>
+        </label>
+        <button>Submit</button>
+    </form>
+</div>
+</div>
     </body>
 </html>

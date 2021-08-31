@@ -1,0 +1,52 @@
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="form">
+    <div class="modal-dialog modal-fullscreen" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Enter Invoice Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        <form action="/sales" method="POST">
+           
+            <label>Invoice Date
+                <input type="date" name="invoiceDate" id="invoiceDate">
+            </label>
+            <label>Due Date
+                <input type="date" name="dueDate" id="dueDate">
+            </label>
+            <label>Customer
+              
+                <input type="number" name="customer">
+               </select>
+               <button>Add customer</button>
+            </label>
+            <label>Item
+                <input type="text" name="item" id="item">
+            </label>
+            <label>Quantity
+                <input type="number" name="quantity" id="quantity">
+            </label>
+            <label>Amount
+                <input type="number" name="amount" id="amount">
+            </label>
+            
+            <label>Balance
+              <input type="number" name="balance" id="balance" value="<%= balance %>">
+          </label>
+            
+            <!-- <label>Balance
+                <input type="number" name="balance" id="balance" value = <%= balance %>>
+            </label> -->
+            <input type="submit" value="Submit">
+        </form>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+</div>

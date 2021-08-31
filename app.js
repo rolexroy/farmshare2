@@ -42,6 +42,7 @@ const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'sql1pass',
+    multipleStatements:true,
     database: 'farmshare'
 
 });
@@ -73,7 +74,7 @@ app.get('/', (req,res) => {
     if(res.locals.isLoggedIn){
         res.render('index');
     } else {
-         res.sendStatus(401)
+         res.redirect('/signin')
          
     }
 });
@@ -82,8 +83,8 @@ app.post('/farmer/new', (req, res) => {
     let id = req.body.id;
     let group = req.body.group;
     if(res.locals.isLoggedIn){
-        connection.query('INSERT INTO farmers (groupName, name, tel, plotSize, plotNature, valueChain, investement, harvest, weight) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)',
-    [group, req.body.name, req.body.tel, req.body.plot, req.body.plot_nature, req.body.valueChain, req.body.investment, req.body.harvest, req.body.weight],
+        connection.query('INSERT INTO farmers (groupName, farmerName, tel, plotSize, plotNature, valueChain, investement, harvest, weight,date) VALUES (?,?,?, ?, ?, ?, ?, ?, ?, ?)',
+    [group, req.body.name, req.body.tel, req.body.plot, req.body.plot_nature, req.body.valueChain, req.body.investment, req.body.harvest, req.body.weight,req.body.date],
     
     (error,results) => { 
         if(error){
@@ -99,6 +100,13 @@ app.post('/farmer/new', (req, res) => {
     }
     
 });
+
+//dashboard json
+app.get('/farmer-statistics.json',(req,res)=>{
+    connection.query('SELECT COUNT(name) AS Number,MONTHNAME(date) as Month,YEAR(date) AS year FROM farmers GROUP BY Month,year ORDER BY Month DESC',(error,results)=>{
+           res.json(results)
+    })
+})
 //register farmer 
 
 app.get('/register',(req,res)=>{
@@ -310,12 +318,12 @@ app.post('/delete/:id', (req ,res) => {
 
 app.get('/production',(req,res)=>{
     if(res.locals.isLoggedIn){
-        connection.query('SELECT farmers.name,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production',(error,results)=>{
+        connection.query('SELECT farmerName,id from farmers',(error,results)=>{
         
             if(error){
                 console.log(error)
             } else {
-               res.render('production')
+               res.render('production',{names:results})
             }
         })
     } else {
@@ -327,7 +335,7 @@ app.get('/production',(req,res)=>{
 
 //production json
 app.get('/production.json',(req,res)=>{
-    connection.query('SELECT farmers.name,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production',(error,results)=>{
+    connection.query('SELECT * FROM production CROSS JOIN farmers',(error,results)=>{
         res.json(results)
         
     })
@@ -339,28 +347,70 @@ app.get('/production.json',(req,res)=>{
 app.post('/product/new',(req,res)=>{ 
     if(res.locals.isLoggedIn){
         let id = req.body.id
-    let farmer_id = req.body.farmerId
+    let farmerName = req.body.farmerName
     let commodity = req.body.commodity
     let yield = req.body.yield
     let collection = req.body.collection
     let region = req.body.region
     let quality = req.body.quality
     
-    connection.query('INSERT INTO production (id,farmer_id,commodity,expectedYield,collectionCenter,region,quality) VALUES(?,?,?,?,?,?,?)',[id,farmer_id,commodity,yield,collection,region,quality],
-    (error,results) =>{
+    const queries = [
+        'SELECT name FROM customers',
+        'INSERT INTO production (id,commodity,expectedYield,collectionCenter,region,quality,farmerName) VALUES(?,?,?,?,?,?,?)'
+    ]
+    
+    connection.query(queries.join(';'),[id,commodity,yield,collection,region,quality,farmerName],
+    (error,results,fields) =>{
         if(error){
             console.log(error)
         } else {
             console.log('values inserted successfully')
-            res.redirect('/')
+            res.send(results[0])
         }
     }
     )
+
+    connection.query('UPDATE stock SET quantity = quantity + ? WHERE commodity = ? AND quality = ?',[yield, commodity, quality],  
+    (error,results) => { 
+    if(error){
+        console.log(error)
+    } else {
+        // res.redirect('/distribution');
+        // console.log('inserted into db')
+    }     
+    }); 
+
+    connection.query('INSERT INTO stock VALUES(?,?,?) WHERE commodity IS NULL',  [commodity,quality,yield],
+    (error,results) => { 
+    if(error){
+        console.log(error)
+    } else {
+        // res.redirect('/distribution');
+        console.log('inserted into db')
+    }     
+    })
     } else {
         res.redirect('/signin')
     }
     
+})
+app.get('/distribution',(req,res)=>{
+    connection.query('SELECT distribution.order_id, distribution.product, distribution.quality , distribution.quantity, distribution.payment , distribution.collection_point, distribution.expected_date, distribution.actual_date, delivery_status FROM distribution',(error,results)=>{
+        
+        if(error){
+            console.log(error)
+        } else {
+           
+           res.render('distribution', {items:results})
 
+
+
+
+
+}
+    })
+    
+})
 //Distribution form
 app.get('/distribution/form',(req,res)=>{
     connection.query('SELECT stock.groupName FROM stock',(error,results)=>{
@@ -419,9 +469,24 @@ app.post('/distribution/store/form',(req,res)=>{
                 res.redirect('/signin')
             }
         })
-    })
+}
   
 })
+
+app.get('/distribution/:id', (req,res) => {
+    let id = Number(req.params.id);
+        connection.query(        
+            'SELECT * FROM distribution WHERE order_id = ? ',[id] ,
+            (error,results) => {
+                // if(results.length === 1){
+                    let check = results[0].delivery_status == 'Delivered';
+                    res.render ('edit_distribution' , {item : [results[0], check]});
+                // } else {
+                //     res.render ('error');
+                // }
+            }
+        );
+});
 
 //update distribution record
 app.post('/update/distribution/:id', (req, res) => {
@@ -477,6 +542,144 @@ app.post('/update/distribution/:id', (req, res) => {
             } 
        }
 });
+//sales
+
+app.get('/sales',(req,res)=>{
+
+    const queries = [
+        'SELECT name FROM customers',
+        'SELECT * FROM invoice INNER JOIN customers ON invoice.customer_id = customers.id'
+    ]
+    connection.query(queries.join(';'),(error,results,fields)=>{
+        
+        if(error){
+            console.log(error)
+        } else {
+         
+           res.render('sales', {customers:results[0],
+        invoices:results[1]})
+            
+        }
+    })
+})
+//json sales
+app.get('/sales.json',(req,res)=>{
+    connection.query('SELECT * FROM invoice INNER JOIN customers ON invoice.customer_id = customers.id',(error,results)=>{
+        res.json(results)
+    })
+
+})
+app.get('/sales/:id',(req,res)=>{
+    let id = req.params.id
+    
+    connection.query(`SELECT * FROM invoice INNER JOIN customers on invoice.customer_id = customers.id WHERE id = ${id}`, id,(error,results)=>{
+        if(error){
+            console.log(error)
+        } else {
+            res.render('invoice',{items:results})
+           
+        }
+    })
+    
+    
+})
+app.post('/sales/:id',(req,res)=>{
+  
+    let payment = Number(req.body.payment),
+        paidDate = req.body.paidDate,
+        invoiceNumber = Number(req.body.invoiceNumber);
+    connection.query(`UPDATE invoice SET payment = payment +  ? ,date_paid = ? WHERE invoice_number = ?`,[payment,paidDate, invoiceNumber],(error,results)=>{
+        if(error){
+            console.log(error)
+        } else {
+           res.redirect('/sales')
+        }
+    })
+})
+app.post('/sales',(req,res)=>{
+    let invoice = req.body.invoiceDate,
+        dueDate = req.body.dueDate,
+        customer = req.body.customer,
+        item = req.body.item,
+        quantity = req.body.quantity,
+        amount = req.body.amount,
+        payment = req.body.payment,
+        balance = req.body.balance;
+     const query = 'if '
+    connection.query('INSERT INTO invoice (Dates,due_dates,customer_id,item,quantity,amount,balance) VALUES(?,?,?,?,?,?,?)',[invoice,dueDate,customer,item,quantity,amount,balance],(error,results)=>{
+        if(error){
+            console.log(error)
+        } else {
+            res.redirect('/sales')
+        }
+    })
+
+})
+
+app.get('/customers',(req,res)=>{
+    connection.query('SELECT * FROM customers',(error,results)=>{
+        res.render('customers',{customers:results})
+    })
+    
+})
+
+app.post('/customers',(req,res)=>{
+    let name = req.body.name,
+        phoneNumber = req.body.phoneNumber,
+        email = req.body.email;
+
+    connection.query('INSERT INTO customers (name,phone_number,email) VALUES (?,?,?)',[name,phoneNumber,email],(error,results)=>{
+        res.redirect("/customers")
+    })
+})
+
+//signup
+app.get('/signup',(req,res)=>{
+    res.render('signup')
+})
+
+
+app.post('/signup',(req,res)=>{
+    let name = req.body.name
+    let password = req.body.password
+    
+ 
+    
+       bcrypt.hash(password,10,(error,hash) => {
+          connection.query('INSERT INTO user(name,password) VALUES (?,?)',
+          [name,hash],
+          res.redirect('/signinin')
+          
+          )
+          
+       })
+     
+       console.log('Account created successfully')
+    
+ 
+ })
+//signin
+app.get('/signin',(req,res)=>{
+    res.render('signin')
+})
+app.post('/signin',(req,res)=>{
+    let name = req.body.name
+    let password = req.body.password
+
+   connection.query('SELECT * FROM user WHERE name = ?',name,(error,results)=>{
+    bcrypt.compare(password,results[0].password,(error,isEqual) =>{
+       if(isEqual){
+             req.session.userId = results[0].id
+           
+             res.redirect('/')
+          } else {
+             console.log("incorrect password")
+             res.redirect('/signin')
+          }
+        })
+    
+ })
+})
 
 app.get('/logout',(req,res)=>{
     req.session.destroy(function(err) {

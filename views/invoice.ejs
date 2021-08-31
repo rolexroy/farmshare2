@@ -1,0 +1,145 @@
+<%- include('partials/header') %>
+<%let id;%>
+
+<% let totalPayment = items.reduce((a,b)=>a+b.payment,0) %>
+<% let totalBalance = items.reduce((a,b)=>a+b.balance,0) %>
+
+
+<div class="containers">
+
+<%- include('partials/sidebar') %>
+
+<% let invoiceNumber %>
+
+<div class="invoice-table">
+  
+  <div> <button type="button" class="btn btn-primary btn-invoice" id="modal-btn">Create new invoice</button></div>
+    
+    <div class="product-details">
+
+  <div class="transaction">
+    <p>Total Balance: <%= totalBalance %></p>
+    <p>Total Payments: <%= totalPayment %></p>
+  </div>
+
+        
+ 
+    <div class="table">
+      <table class="table">
+        <thead>
+          <th>Invoice Number</th>
+          <th>Product</th>
+          <th>Quantity(in kg)</th>
+          <th>Price(per kg)</th>
+          <th>Amount</th>
+          <th>Payment</th>
+          <th>Balance</th>
+          <th>Action</th>
+        </thead>
+        <tbody>
+          <% for (item of items){%>
+            <h1><%= item.customer%></h1>
+            <%let amount = item.quantity * item.amount %>
+            <% id = item.invoice_number %>
+          <tr>
+          <td><%= item.invoice_number%></td>
+          <td><%= item.item%></td>
+          <td><%= item.quantity %></td>
+          <td><%= item.amount %></td>
+          <td><%= amount %></td>
+          <% if(item.payment){%>
+            <td><%= item.payment%></td>
+
+          <%} else { %>
+            <td><%= 0%></td>
+
+          <%}%>
+
+
+          
+          <% balance = amount - item.payment %>
+          <td><%= balance %></td>
+          <td>
+            <form action="/sales/<%= id%>" method="POST">
+              <button type="button" class="btn btn-primary toggle-btn" data-toggle="modal" data-target="#payment" value="<%= item.invoice_number %>">Add payment</button>
+
+            </form>
+          
+          </td>
+         
+          </tr>
+<%}%>
+
+        </tbody>
+      </table>
+    </div>
+   
+    
+
+   
+</div>
+</div>
+
+<%- include('partials/modal') %>
+
+
+<div class="modal fade" id="payment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="form">
+    <div class="modal-dialog modal-fullscreen" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Enter Invoice Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        <form action="/sales/<%= id %>" method="POST">
+           <label for="">
+             <input type="text" name ="invoiceNumber" id="invoiceNumber">
+           </label>
+            <label>Amount
+                <input type="number" name="payment" id="payment" value=0>
+            </label>
+            <label>Date
+                <input type="date" name="paidDate" id="paidDate">
+            </label>
+            <label>
+                <select name="paymentMethod" id="payment">
+                    <option value="cash">cash</option>
+                    <option value="credit">credit</option>
+                    <option value="cheque">cheque</option>
+                </select>
+            </label>
+           
+        
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+      </div>
+    </div>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+
+<script>
+  let button = document.querySelectorAll('.toggle-btn')
+  let input = document.querySelector('#invoiceNumber')
+   
+
+  button.forEach((btn) => {
+    btn.addEventListener('click',(e)=>{
+      input.value = e.target.value
+      console.log(e.target.value)
+    })
+  })
+</script>
+<script src='/js/modal.js'></script>
+</body>
+</html>

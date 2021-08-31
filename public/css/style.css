@@ -6,28 +6,44 @@
     box-sizing: border-box;
 
 }
-body{
-    border:1px solid black;
-}
 
 
-.nav {
+/* .nav {
     display: flex;
-    /* align-items: center; */
     justify-content: center;
-    height: auto;
-    
-}
+    position:absolute;
+    right:0;
+} */
 .containers{
     display: flex;
     min-height:100vh;
     width:100%;
-    justify-content:center;
+    /* justify-content: space-between; */
+    position:relative;
+  
    
 }
+.canvas{
+   margin:40px;
+    width:60%;
+   
+}
+.canvas-div{
+    display: flex;
+    justify-content: space-between;
+    
+    width:100%;
+}
+
 .sidebar{
-  margin-top:30px;
+ 
     border-right:1px solid black;
+    background-color:#436A2D;
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+    width:200px;
+    
     
 }
 
@@ -64,13 +80,13 @@ body{
 .heading{
     text-align:center;
 }
-.form{
+/* .form{
     display: flex;
     justify-content: center;
     align-items: center;
     
     
-}
+} */
 .input-field{
     margin:10px;
     border-radius: 5px;
@@ -80,16 +96,40 @@ body{
 
 .link{
     text-decoration: none;
-    color:black;
+    color:#e5e5e5;
+    width:100%;
+    padding:10px;
     /*  */
 }
-
+.link:hover,
+link:active{
+    background-color:black;
+    color:white;
+    text-decoration: none;
+}
 
 .logo{
     height: auto;
     width: 65px;
     /* margin-top: 3px; */
     
+}
+
+.sales-table{
+    display:flex;
+    flex-direction:column;
+    border:1px solid black;
+    align-items:center;
+}
+
+.btn-invoice{
+    transform: translate(200%,0);
+}
+.invoice-table{
+    border:1px solid black;
+    display: flex;
+    width:100%;
+    justify-content: center;
 }
 
 .anchor {

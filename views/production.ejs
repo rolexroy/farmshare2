@@ -1,10 +1,15 @@
 <%- include('partials/header') %>
     
+
+<% let id %>
+
     
     <div class="containers">
+      <%- include('partials/sidebar') %>
         <div class="table-container">
             <div class="table thead-dark"></div>
         </div>
+        
         
         <div class="production-details">
             <h2>Production Form</h2>
@@ -16,12 +21,22 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                    <label for="inputId4" class="col-sm-2 col-form-label">Farmer Id</label>
+                    <label for="inputId4" class="col-sm-2 col-form-label">Farmer Name</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputId4" name="farmerId">
+                      <select name="farmerName" id="farmerName">
+                        <option selected>Select farmer</option>
+                        <% for (let name of names) { %>
+                          <option value="<%= name.farmerName %> "><%= name.farmerName %></option>
+                          <% id = name.id %>
+
+
+                        <%}%>
+                      </select>
+                     
                     </div>
                     
                 </div>
+              
                 
                 <div class="form-group row">
                   <label for="commodity" class="col-sm-2 col-form-label">Commodity</label>
@@ -69,19 +84,11 @@
                     </div>
                 </div>
                   
-                </div>
+            </div>
                
                 
               </form>
-            
-           
-              
-                
-               
-        
-                
-        
-            </form> -->
+            </form>
         </div>
     </div>
     
@@ -107,8 +114,8 @@
       columns:[ //Define Table Columns
      
       
-          {title:"Name", field:"name", hozAlign:"left"},
-          {title:"Group Name", field:"groupname",headerFilter:'input'},
+          {title:"Name", field:"farmerName", hozAlign:"left"},
+          {title:"Group Name", field:"groupName",headerFilter:'input'},
           {title:"Value Chain", field:"valuechain",headerFilter:'input'},
           
           {title:"Yield(in Kg)", field:"expectedYield"},
