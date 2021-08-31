@@ -2,25 +2,33 @@
 <div class="container ">
 
     <h2>Edit Distribution Records</h2>
-
-    <form action="/update/distribution/<%= item[0].order_id %>" method="POST" >
+    <form action="/update/distribution/<%= items[0].order_id %>" method="POST"  autocomplete = 'on'>
         <div class="form-content">
-            <input type="hidden" name="check" value="<%= item[1]%>">
-            <input type="hidden" name="initial_qty" value="<%= item[0].quantity %>">
-            <input type="text" name="id" value ="<%= item[0].order_id %>" ><br>
-            <input type="text" name="product" value ="<%= item[0].product %>" ><br>
-            <input type="text" name="quality" value ="<%= item[0].quality%>" ><br>
-            <input type="text" name="quantity" value ="<%= item[0].quantity%>" ><br>
-            <input type="text" name="payment" value ="<%= item[0].payment%>"><br>
-            <input type="text" name="collection_point" value ="<%= item[0].collection_point %>"><br>
+            <input type="hidden" name="check" value="<%= items[1]%>">
+            <input type="hidden" name="initial_qty" value="<%= items[0].quantity %>">
+            <input type="text" name="id" value ="<%= items[0].order_id %>" ><br>
+            <input type="text" name="product" value ="<%= items[0].product %>" ><br>
+            <input type="text" name="quality" value ="<%= items[0].quality%>" ><br>
+            <input type="text" name="quantity" value ="<%= items[0].quantity%>" placeholder="Quantity in kgs"><br>
+            <input type="text" name="payment" value ="<%= items[0].payment%>" placeholder="Payment"><br>
+            <input type="text" name="collection_point" value ="<%= items[0].collection_point %>"><br>
             <label for="">Expected payment date:</label>
-            <input type="date" name="expected_date" value ="<%= item[0].expected_date%>"><br>
+            <input type="date" name="expected_date" value ="<%= items[0].expected_date%>"><br>
             <label for="">Actual payment date:</label>
-            <input type="date" name="actual_date" value ="<%= item[0].actual_date%>"><br>
+            <input type="date" name="actual_date" value ="<%= items[0].actual_date%>"><br>
             <label for="delivery">Delivery Status: 
                 <select name="delivery">
                     <option value="Delivered">Delivered</option>
                     <option value="Pending">Pending</option>
+                </select><br>
+            </label>
+            <!--  -->
+            <label for="groupName">Group Name: 
+                <select name="groupName" value = <%= items[0].groupName %> >
+                    <%for (let group of groups){ %>
+                    
+                        <option value="Kiambu"><%= group.groupName %></option>
+                    <%}%>             
                 </select><br>
             </label>
             <div class="form-btns">
@@ -36,6 +44,7 @@ integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 crossorigin="anonymous"></script>
 <script>
    let content = document.getElementById('content');
-   content.value = '<%= item.content %>';
+   content.value = '<%= items.content %>';
 </script>
+
 <%- include('partials/footer') %>

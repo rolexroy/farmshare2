@@ -19,13 +19,13 @@ app.use(session({
     }
 
 }))
-app.use(express.static('public'));
+app.use(express.static('../farmshare/public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'public/uploads');
+      cb(null, '../farmshare/public/uploads');
     },
     filename: (req, file, cb) => {
       const { originalname } = file;
@@ -41,8 +41,9 @@ app.use(bodyParser.urlencoded({
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'sql1pass',
-    database: 'farmshare'
+    password: '',
+    database: 'farmshare',
+    multipleStatements: true
 
 });
 connection.connect()
@@ -62,21 +63,59 @@ connection.connect()
 })
 
 
-// connection.connect(function(err) {
-//     if(err) {
-//         console.log('error connecting: ' + err.stack);
-//         return;
-//     }
-// });
-
+connection.connect(function(err) {
+    if(err) {
+        console.log('error connecting: ' + err.stack);
+        return;
+    }
+});
+app.get('/signup',(req,res)=>{
+    res.render('signup')
+ })
+  
+  
+app.post('/signup',(req,res)=>{
+    let name = req.body.name
+    let password = req.body.password
+    
+        bcrypt.hash(password,10,(error,hash) => {
+           connection.query('INSERT INTO user(name,password) VALUES (?,?)',
+            [name,hash],
+           res.redirect('/signin')
+           )
+        })         
+    })
 app.get('/', (req,res) => {
     if(res.locals.isLoggedIn){
         res.render('index');
     } else {
-         res.sendStatus(401)
+        //  res.sendStatus(401)
+        res.redirect('/signin')
          
     }
 });
+
+//signin
+app.get('/signin',(req,res)=>{
+    res.render('signin')
+})
+app.post('/signin',(req,res)=>{
+    let name = req.body.name
+    let password = req.body.password
+    
+   connection.query('SELECT * FROM user WHERE name = ?',[name],(error,results)=>{
+    bcrypt.compare(password,results[0].password,(error,isEqual) =>{
+       if(isEqual){
+             req.session.userId = results[0].id
+             res.redirect('/')
+          } else {
+             console.log("incorrect password")
+             res.redirect('/signin')
+          }
+        })
+    })
+})
+
 
 app.post('/farmer/new', (req, res) => {
     let id = req.body.id;
@@ -155,7 +194,6 @@ app.get('/farmers.json',(req,res)=>{
     })
 })
 
-
 app.get('/marketing', (req, res) => {
     const query = `SELECT * FROM order_table `
     if(res.locals.isLoggedIn){
@@ -224,22 +262,23 @@ app.get('/blog/new', (req, res) => {
     res.render('create')
 });
 
-// app.post('/posts/store', upload.single('myImage'), (req, res) => {
-//     let articleName = req.body.title;
-//     let image = req.file.filename;
-//     connection.query('INSERT INTO blog (title, content, image) VALUES (?, ?, ?)',
-//     [articleName, req.body.content, image],
+//store posts
+app.post('/posts/store', upload.single('myImage'), (req, res) => {
+    let articleName = req.body.title;
+    let image = req.file.filename;
+    connection.query('INSERT INTO blog (title, content, image) VALUES (?, ?, ?)',
+    [articleName, req.body.content, image],
     
-//     (error,results) => { 
-//         if(error){
-//             console.log(error)
-//         } else {
-//             res.redirect('/blog');
-//             // console.log('inserted into db')
-//         }
+    (error,results) => { 
+        if(error){
+            console.log(error)
+        } else {
+            res.redirect('/blog');
+            // console.log('inserted into db')
+        }
         
-//     });
-// });
+    });
+});
 
 //view page
 app.get('/post/:id',(req,res) => {
@@ -269,11 +308,9 @@ app.get('/blog/:id', upload.single('myImage') ,(req,res) => {
         connection.query(        
             'SELECT * FROM blog WHERE id = ? ',[id] ,
             (error,results) => {
-                // if(results.length === 1){
+                
                     res.render ('edit' , {item : results[0]});
-                // } else {
-                //     res.render ('error');
-                // }
+                
             }
         );
 });
@@ -310,7 +347,7 @@ app.post('/delete/:id', (req ,res) => {
 
 app.get('/production',(req,res)=>{
     if(res.locals.isLoggedIn){
-        connection.query('SELECT farmers.name,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production',(error,results)=>{
+        connection.query('SELECT farmers.name,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production ON farmers.id = production.farmer_id;',(error,results)=>{
         
             if(error){
                 console.log(error)
@@ -319,32 +356,26 @@ app.get('/production',(req,res)=>{
             }
         })
     } else {
-        res.redirect('/signin')
-    }
-   
-    
+        res.redirect('/signin');
+    }   
 })
 
 //production json
 app.get('/production.json',(req,res)=>{
     connection.query('SELECT farmers.name,farmers.groupname,farmers.valuechain,production.expectedYield,production.commodity FROM farmers INNER JOIN production',(error,results)=>{
-        res.json(results)
-        
-    })
-    
+        res.json(results)  
+    })    
 })
-
-
 
 app.post('/product/new',(req,res)=>{ 
     if(res.locals.isLoggedIn){
         let id = req.body.id
-    let farmer_id = req.body.farmerId
-    let commodity = req.body.commodity
-    let yield = req.body.yield
-    let collection = req.body.collection
-    let region = req.body.region
-    let quality = req.body.quality
+        let farmer_id = req.body.farmerId
+        let commodity = req.body.commodity
+        let yield = req.body.yield
+        let collection = req.body.collection
+        let region = req.body.region
+        let quality = req.body.quality
     
     connection.query('INSERT INTO production (id,farmer_id,commodity,expectedYield,collectionCenter,region,quality) VALUES(?,?,?,?,?,?,?)',[id,farmer_id,commodity,yield,collection,region,quality],
     (error,results) =>{
@@ -356,9 +387,32 @@ app.post('/product/new',(req,res)=>{
         }
     }
     )
+
+        // ___________________________________________________________________________________________________________________________________
+        connection.query('UPDATE stock SET quantity = quantity + ? WHERE commodity = ? AND quality = ?',[yield, commodity, quality],  
+        (error,results) => { 
+        if(error){
+            console.log(error)
+        } else {
+            // res.redirect('/distribution');
+            // console.log('inserted into db')
+        }     
+        }); 
+      
+        connection.query('INSERT INTO stock  VALUES(?, ?, ?) WHERE commodity IS NULL',[commodity, quality, yield,],  
+        (error,results) => { 
+        if(error){
+            console.log(error)
+        } else {
+            // res.redirect('/distribution');
+            // console.log('inserted into db')
+        }     
+        }); 
+
     } else {
         res.redirect('/signin')
     }
+})
     
 
 //Distribution form
@@ -373,6 +427,27 @@ app.get('/distribution/form',(req,res)=>{
     })
 })
 
+//Distribution view
+app.get('/distribution',(req,res)=>{
+    connection.query('SELECT distribution.order_id, distribution.product, distribution.quality , distribution.quantity, distribution.payment, distribution.collection_point, distribution.expected_date, distribution.actual_date, delivery_status FROM distribution',(error,results)=>{
+        
+        if(error){
+            console.log(error)
+        } else {
+           res.render('distribution', {items:results})
+       
+        }
+    })
+    
+})
+
+//stock json
+app.get('/stock.json',(req,res)=>{
+    connection.query('SELECT * FROM stock',(error,results)=>{
+        res.json(results)
+    })
+})
+
 //Distribution store form
 app.post('/distribution/store/form',(req,res)=>{
     let id = req.body.id;
@@ -380,48 +455,65 @@ app.post('/distribution/store/form',(req,res)=>{
     let quality = req.body.quality;
     let quantity = req.body.quantity;
     let delivery = req.body.delivery;
-    let groupName = req.body.groupName;
-   
+    let groupName = req.body.groupName;  
     
-    connection.query('SELECT stock.quantity FROM stock WHERE groupName = ? AND commodity = ? AND quality = ?',
-    [groupName, product, quality ],
-    
-    (error,results) => { 
-        if(error){
-            console.log(error)
+    connection.query('SELECT stock.quantity FROM stock WHERE commodity = ? AND quality = ? AND groupName = ? ; SELECT stock.groupName FROM stock',[product, quality, groupName],
+    (error, results) => {
+    if(error){
+        console.log(error)
+    } else {
+       if(Number(quantity) > results[0][0].quantity ) {
+            console.log('Too much!');
+            console.log(results[0]);
+            res.render('edit_distribution', { items: [{ order_id: req.body.id, product: req.body.product.toLowerCase(), quality: req.body.quality, quantity: '', payment: req.body.payment,
+    collection_point: req.body.collection_point, expected_date: req.body.expected_date, actual_date: req.body.actual_date, delivery_status: req.body.delivery }],  groups:results[1] });
+           
         } else {
-            // function stock(){
-                console.log( results);
-            // }
-        } 
-    }); 
-    // console.log(stock());
-    // _____________________________________________________________________________________________________________________________________
-    connection.query('INSERT INTO distribution ( product, quality, quantity, payment, collection_point, expected_date, actual_date, delivery_status, groupName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, groupName],
-    
-    (error,results) => { 
-        if(error){
-            console.log(error)
-        } else {
-            res.redirect('/distribution');
-            // console.log('inserted into db')
-        }
-        
-    }); 
-    // __________________________________________________________________________________________________________________________________
-    if(delivery === 'Delivered'){
-        connection.query('UPDATE stock SET quantity = quantity - ? WHERE groupName= ? AND commodity = ? AND quality = ?',[quantity, groupName, product, quality],  
+            connection.query('INSERT INTO distribution ( product, quality, quantity, payment, collection_point, expected_date, actual_date, delivery_status, groupName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, groupName],  
             (error,results) => { 
-            if(error){
-                console.log(error)
-            } else {
-                res.redirect('/signin')
+                if(error){
+                    console.log(error)
+                } else {
+                    res.redirect('/distribution/form');
+                    // console.log('inserted into db')
+                }
+            });  
+
+            if(delivery === 'Delivered'){
+                connection.query('UPDATE stock SET quantity = quantity - ? WHERE groupName= ? AND commodity = ? AND quality = ?',[quantity, groupName, product, quality],  
+                    (error,results) => { 
+                    if(error){
+                        console.log(error)
+                    } else {
+                        console.log('updated');
+                    }
+                })
             }
-        })
+        } 
+    }
     })
-  
+    // _____________________________________________________________________________________________________________________________________
+
+    // __________________________________________________________________________________________________________________________________
+
 })
+
+//edit distribution data
+app.get('/distribution/:id', (req,res) => {
+    let id = Number(req.params.id);
+        connection.query(        
+            'SELECT * FROM distribution WHERE order_id = ?; SELECT stock.groupName FROM stock ',[id] ,
+            (error,results) => {
+                // if(results.length === 1){
+                    let check = results[0].delivery_status == 'Delivered';
+                     res.render ('edit_distribution', {items : results[0], groups : results[1]});
+                // } else {
+                //     res.render ('error');
+                // }
+            }
+        );
+});
 
 //update distribution record
 app.post('/update/distribution/:id', (req, res) => {
@@ -483,6 +575,6 @@ app.get('/logout',(req,res)=>{
         res.redirect('/signin')
       })
 })
-app.listen(3000 , () => {
-    console.log('App listening on port 3000');
+app.listen(3080, () => {
+    console.log('Listening to port 3080')
 });
