@@ -1,8 +1,8 @@
 <%- include('partials/header') %>
 <div class="container ">
 
-    <h2>Edit Distribution Records</h2>
-    <form action="/update/distribution/<%= items[0].order_id %>" method="POST"  autocomplete = 'on'>
+    <h2> Distribution Validation</h2>
+    <form action="/distribution/store/form %>" method="POST"  autocomplete = 'on'>
         <div class="form-content">
             <input type="hidden" name="check" value="<%= items[1]%>">
             <input type="hidden" name="initial_qty" value="<%= items[0].quantity %>">

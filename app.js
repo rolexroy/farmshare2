@@ -456,7 +456,7 @@ app.post('/distribution/store/form',(req,res)=>{
     let quantity = req.body.quantity;
     let delivery = req.body.delivery;
     let groupName = req.body.groupName;  
-    
+    console.log(quantity);
     connection.query('SELECT stock.quantity FROM stock WHERE commodity = ? AND quality = ? AND groupName = ? ; SELECT stock.groupName FROM stock',[product, quality, groupName],
     (error, results) => {
     if(error){
@@ -465,7 +465,7 @@ app.post('/distribution/store/form',(req,res)=>{
        if(Number(quantity) > results[0][0].quantity ) {
             console.log('Too much!');
             console.log(results[0]);
-            res.render('edit_distribution', { items: [{ order_id: req.body.id, product: req.body.product.toLowerCase(), quality: req.body.quality, quantity: '', payment: req.body.payment,
+            res.render('distribution_validation', { items: [{ order_id: req.body.id, product: req.body.product.toLowerCase(), quality: req.body.quality, quantity: '', payment: req.body.payment,
     collection_point: req.body.collection_point, expected_date: req.body.expected_date, actual_date: req.body.actual_date, delivery_status: req.body.delivery }],  groups:results[1] });
            
         } else {
