@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<div class="containers">
+    <%- include('partials/sidebar') %>
+
+
+<div class="table">
+
+    <table>
+        <% for(let customer of customers){ %>
+            <thead>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone NUmber</th>
+            </thead>
+            <tbody>
+                <td><%= customer.name%></td>
+                <td><%= customer.email %></td>
+                <td><%= customer.phone_number %></td>
+            </tbody>
+        <%}%>
+    </table>
+    
+</div>
+
+<div class="form">
+    <form action="/customers" method="POST">
+    <label>Name
+        <input type="text" name="name" id="name">
+    </label>
+    <label>Phone Number
+        <input type="text" name="phoneNumber" id="phoneNumber">
+    </label>
+    <label>Email
+        <input type="text" name="email" id="email">
+    </label>
+    <input type="submit" value="Submit">
+</form>
+</div>
+</div>

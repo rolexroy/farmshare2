@@ -1,0 +1,113 @@
+<%- include('partials/header') %>
+<%- include('partials/modal') %>
+
+
+<% let payments = invoices.reduce((a,b) => a+b.payment,0) %>
+
+
+<% let balance%>
+
+
+
+
+
+<div class="containers">
+
+  <%- include('partials/sidebar') %>
+  
+<div class="table-responsive sales-table">
+  
+  <div> <button type="button" class="btn btn-primary btn-invoice" id="modal-btn">Create new invoice</button></div>
+  <table class="table thead-dark">
+    
+    <thead class="thead-dark">
+     
+      <th>Invoice Number</th>
+      <th>Customer</th>
+      <th>Amount</th>
+      <th hidden>Invoice Date</th>
+       <th>Due Date</th>
+   <th>Status</th>
+   <th>Days Due</th>
+      
+
+      
+    </thead>
+    <tbody>
+      <% for(let invoice of invoices){%>
+
+      <tr onclick="window.location='/sales/<%= invoice.id %>';">
+       
+        <td><%= 'AB-' + invoice.invoice_number%></td>
+       
+        <td><%= invoice.name%></td>
+        
+        
+        <% let amount = invoice.quantity * invoice.amount %>
+        <td><%= amount %></td>
+        <td hidden class="invoice_date"><%= invoice.Dates %></td>
+        <td class="due_date"> <%= invoice.due_dates.toLocaleDateString() %></td>
+
+       
+       
+        
+        
+      
+       <% if (!invoice.payment ){ %>
+        <td><%= "Due"%></td>
+       
+       <%} else  if(invoice.payment === amount){ %>
+        <td><%= "paid"%></td>
+       <%} else { %>
+        <td><%= "partial"%></td>
+       <%}%>
+
+       
+       <td class="dates_due"></td>
+
+        
+      
+       
+      
+       
+     
+      </tr>
+      <%}%>
+      <tfoot>
+       
+<tr>
+  <th colspan="2">Total
+  <td><%= payments %></td>
+  </th>
+  
+</tr>
+
+        
+      </tfoot>
+
+    </tbody>
+  </table>
+</div>
+
+
+<%- include('partials/modal') %>
+
+
+<div>
+  <table>
+    <th></th>
+  </table>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src='/js/modal.js'></script>
+
+
+
+
+  
+</body>
+</html>

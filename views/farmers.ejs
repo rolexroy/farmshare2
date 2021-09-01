@@ -17,22 +17,8 @@
   </head>
   <body>
     <div class="containers">
-      <div class="sidebar">
-        <button class="button__link btn"><a href="/farmers" class="link">Farmers</a></button>
-        <button class="button__link btn"><a href="/production" class="link">Production</a></button>
-        <button class="button__link btn"><a href="/orders" class="link">Orders</a></button>
-        <button class="button__link btn"><a href="/aggregation" class="link">Aggregation</a></button>
-        <button class="button__link btn"><a href="/marketing" class="link">Marketing</a></button>
-        
-      </div>
-      <div class="table thead-dark table-bordered">
-
-
-        
-
-      </div>
-    
-      
+      <%- include('partials/sidebar') %>
+      <div class="table thead-dark table-bordered"></div>
     </div>
    
     <script type="text/javascript" src="dist/js/tabulator.min.js"></script>
@@ -54,8 +40,8 @@ var table = new Tabulator(".table", {
     {title:"Plot Nature", field:"plotnature"},
     {title:"Value Chain", field:"valuechain"},
     {title:"Investment(in Ksh.)", field:"investement"},
-    {title:"Harvest(in months)", field:"harvest"},
-    {title:"Weight(in kg)", field:"weight"},
+    {title:"Projected Harvest(in months)", field:"harvest"},
+    {title:"Projected Weight(in kg)", field:"weight"},
   ],
  	rowClick:function(e, row){ //trigger an alert message when the row is clicked
  		alert("Row " + row.getData().id + " Clicked!!!!");
