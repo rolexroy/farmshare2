@@ -462,10 +462,10 @@ app.post('/distribution/store/form',(req,res)=>{
     if(error){
         console.log(error)
     } else {
+        
        if(Number(quantity) > results[0][0].quantity ) {
             console.log('Too much!');
-            console.log(results[0]);
-            res.render('edit_distribution', { items: [{ order_id: req.body.id, product: req.body.product.toLowerCase(), quality: req.body.quality, quantity: '', payment: req.body.payment,
+            res.render('distribution_validation', { items: [{ order_id: req.body.id, product: req.body.product.toLowerCase(), quality: req.body.quality, quantity: req.body.quantity, payment: req.body.payment,
     collection_point: req.body.collection_point, expected_date: req.body.expected_date, actual_date: req.body.actual_date, delivery_status: req.body.delivery }],  groups:results[1] });
            
         } else {
