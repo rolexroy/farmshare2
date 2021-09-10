@@ -26,8 +26,8 @@
                       <select name="farmerName" id="farmerName">
                         <option selected>Select farmer</option>
                         <% for (let name of names) { %>
-                          <option value="<%= name.farmerName %> "><%= name.farmerName %></option>
-                          <% id = name.id %>
+                          <option value="<%=name.name%> "><%=name.name%></option>
+                         
 
 
                         <%}%>

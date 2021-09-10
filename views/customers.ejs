@@ -6,35 +6,69 @@
 
 <div class="table">
 
-    <table>
-        <% for(let customer of customers){ %>
+    <table class="table">
+       
             <thead>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone NUmber</th>
             </thead>
             <tbody>
+                <% for(let customer of customers){ %>
+                <tr>
+                
                 <td><%= customer.name%></td>
                 <td><%= customer.email %></td>
                 <td><%= customer.phone_number %></td>
+               
+                </tr>
+                <%}%>
             </tbody>
-        <%}%>
+       
     </table>
     
 </div>
 
 <div class="form">
-    <form action="/customers" method="POST">
-    <label>Name
-        <input type="text" name="name" id="name">
-    </label>
-    <label>Phone Number
-        <input type="text" name="phoneNumber" id="phoneNumber">
-    </label>
-    <label>Email
-        <input type="text" name="email" id="email">
-    </label>
-    <input type="submit" value="Submit">
+    <h2>Add Customer</h2> 
+    <form action='/customers' method="POST">
+        <div class="form-group row">
+            <label for="inputName4" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputName4" name="name">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputPhone4" class="col-sm-2 col-form-label">Phone Number</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputPhone4" name="phoneNumber">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputEmail4" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputEmail4" name="email">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="submit"class="col-sm-2 col-form-label"></label>
+            <div class="col-md-10">
+                <button type="submit" class="btn">Submit</button>
+            </div>
+        </div>
+
+
+   
+    
+    
+    
 </form>
 </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+  
+</body>
+</html>
