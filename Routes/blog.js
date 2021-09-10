@@ -31,6 +31,23 @@ router.get('/blog/new', (req, res) => {
 });
 
 
+router.post('/posts/store', upload.single('myImage'), (req, res) => {
+    let articleName = req.body.title;
+    let image = req.file.filename;
+    connection.query('INSERT INTO blog (title, content, image) VALUES (?, ?, ?)',
+    [articleName, req.body.content, image],
+    
+    (error,results) => { 
+        if(error){
+            console.log(error)
+        } else {
+            res.redirect('/blog');
+            
+        }
+        
+    });
+});
+
 
 //view page
 

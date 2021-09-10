@@ -27,19 +27,21 @@ app.use(session({
     }
 
 }))
-app.use(express.static('public'));
+
+app.use(express.static('../farmshare/public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'public/uploads');
+      cb(null, '../farmshare/public/uploads');
     },
     filename: (req, file, cb) => {
       const { originalname } = file;
       cb(null, `${uuid()}-${originalname}`);     
     }  
-  });
+});
+
 const upload = multer({ storage });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -54,9 +56,8 @@ const connection = mysql.createConnection({
     database: 'farmshare'
 
 });
+
 connection.connect()
-
-
 
   app.use((req,res,next)=>{
     if(req.session.userId === undefined){
@@ -70,20 +71,6 @@ connection.connect()
 })
 
 
-
-
-app.get('/', (req,res) => {
-    if(res.locals.isLoggedIn){
-        res.render('index');
-    } else {
-         res.redirect('/signin')
-         
-    }
-});
-
-
-//farmers
-
 app.use('/farmers',farmerRoute)
 app.use(salesRoute)
 app.use(productionRoute)
@@ -96,22 +83,24 @@ app.use(marketingRoute)
 app.use(customersRoute)
 
 
-//dashboard json
-
-//register farmer 
-
+app.get('/', (req,res) => {
+    if(res.locals.isLoggedIn){
+        res.render('index');
+    } else {
+        //  res.sendStatus(401)
+        res.redirect('/signin')
+    }
+});
 app.get('/register',(req,res)=>{
     res.render('register')
 })
 
-//get farmers
+app.get('/stock.json',(req,res)=>{
+    connection.query('SELECT * FROM stock',(error,results) => {
+        res.json(results)
+    })
+})
 
-
-
-
-
-
-
-app.listen(3000 , () => {
-    console.log('App listening on port 3000');
+app.listen(3000, () => {
+    console.log('Listening to port 3080')
 });

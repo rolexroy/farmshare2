@@ -58,36 +58,36 @@ router.post('/distribution/store/form',(req,res)=>{
         if(error){
             console.log(error)
         } else {
-            // function stock(){
-                console.log( results);
-            // }
+            if(Number(quantity) > results[0][0].quantity ) {
+                console.log('Too much!');
+                res.render('distribution_validation', { items: [{ order_id: req.body.id, product: req.body.product.toLowerCase(), quality: req.body.quality, quantity: req.body.quantity, payment: req.body.payment,
+                collection_point: req.body.collection_point, expected_date: req.body.expected_date, actual_date: req.body.actual_date, delivery_status: req.body.delivery }],  groups:results[1] });
+               
+            } else {
+                connection.query('INSERT INTO distribution ( product, quality, quantity, payment, collection_point, expected_date, actual_date, delivery_status, groupName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, groupName],  
+                (error,results) => { 
+                    if(error){
+                        console.log(error)
+                    } else {
+                        res.redirect('/distribution/form');
+                        // console.log('inserted into db')
+                    }
+                }); 
+            } 
+    
+            if(delivery === 'Delivered'){
+                connection.query('UPDATE stock SET quantity = quantity - ? WHERE groupName= ? AND commodity = ? AND quality = ?',[quantity, groupName, product, quality],  
+                    (error,results) => { 
+                    if(error){
+                        console.log(error)
+                    } else {
+                        console.log('updated');
+                    }
+                })
+            }
         } 
     }); 
-    // console.log(stock());
-    // _____________________________________________________________________________________________________________________________________
-    connection.query('INSERT INTO distribution ( product, quality, quantity, payment, collection_point, expected_date, actual_date, delivery_status, groupName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, groupName],
-    
-    (error,results) => { 
-        if(error){
-            console.log(error)
-        } else {
-            res.redirect('/distribution');
-            // console.log('inserted into db')
-        }
-        
-    }); 
-    // __________________________________________________________________________________________________________________________________
-    if(delivery === 'Delivered'){
-        connection.query('UPDATE stock SET quantity = quantity - ? WHERE groupName= ? AND commodity = ? AND quality = ?',[quantity, groupName, product, quality],  
-            (error,results) => { 
-            if(error){
-                console.log(error)
-            } else {
-                res.redirect('/signin')
-            }
-        })
-}
   
 })
 

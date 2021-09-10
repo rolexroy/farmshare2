@@ -1,15 +1,16 @@
 <%- include('partials/header') %>
 <div class="container ">
 
-    <h2>Edit Distribution Records</h2>
-    <form action="/update/distribution/<%= items[0].order_id %>" method="POST"  autocomplete = 'on'>
+    <h2> Distribution Validation</h2>
+    <form action="/distribution/store/form %>" method="POST"  autocomplete = 'on'>
         <div class="form-content">
             <input type="hidden" name="check" value="<%= items[1]%>">
             <input type="hidden" name="initial_qty" value="<%= items[0].quantity %>">
             <input type="text" name="id" value ="<%= items[0].order_id %>" ><br>
-            <input type="text" name="product" value ="<%= items[0].product %>" ><br>
-            <input type="text" name="quality" value ="<%= items[0].quality%>" ><br>
-            <input type="text" name="quantity" value ="<%= items[0].quantity%>" placeholder="Quantity in kgs"><br>
+            <input type="text" name="product" id= "commodity" value ="<%= items[0].product %>" ><br>
+            <input type="text" name="quality" id="quality" value ="<%= items[0].quality%>" ><br>
+            <input type='text' id = 'quantity' value ="<%= items[0].quantity%>"  hidden>
+            <input type="text" name="quantity" placeholder="Quantity in kgs" required><br>
             <input type="text" name="payment" value ="<%= items[0].payment%>" placeholder="Payment"><br>
             <input type="text" name="collection_point" value ="<%= items[0].collection_point %>"><br>
             <label for="">Expected payment date:</label>
@@ -44,7 +45,12 @@ integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 crossorigin="anonymous"></script>
 <script>
    let content = document.getElementById('content');
-   content.value = '<%= items.content %>';
-</script>
-
+   let quantity = document.getElementById('quantity')
+   let quality = document.getElementById('quality')
+   let commodity = document.getElementById('commodity')
+//    console.log(quantity.value)
+//    content.value = '<%= items.content %>';
+    // let quantity = document.querySelector('#quantity');
+    alert('You do not have ' + quantity.value + ' kgs of ' + quality.value + ' ' + commodity.value + ' in your stock');
+</script>    
 <%- include('partials/footer') %>
