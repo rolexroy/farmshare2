@@ -8,21 +8,38 @@
 }
 
 
-/* .nav {
+.nav {
     display: flex;
     justify-content: center;
-    position:absolute;
-    right:0;
-} */
+   
+}
 .containers{
     display: flex;
     min-height:100vh;
     width:100%;
+    
+   
     /* justify-content: space-between; */
     position:relative;
   
    
 }
+.error{
+    border:1px solid red;
+}
+.form-container{
+   
+    width:100%;
+    display:flex;
+    justify-content: center;
+    align-items:center;
+}
+.signin-form{
+    display:flex;
+    flex-direction: column;
+    
+}
+
 .canvas{
    margin:40px;
     width:60%;

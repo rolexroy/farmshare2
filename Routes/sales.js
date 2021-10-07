@@ -18,7 +18,8 @@ router.get('/sales',(req,res)=>{
 
     const queries = [
         'SELECT name FROM customers',
-        'SELECT * FROM invoice INNER JOIN customers ON invoice.customer_id = customers.id'
+        'SELECT * FROM invoice INNER JOIN customers ON invoice.customer_id = customers.id',
+        'SELECT DISTINCT commodity from stock'
     ]
     connection.query(queries.join(';'),(error,results,fields)=>{
         
@@ -27,7 +28,7 @@ router.get('/sales',(req,res)=>{
         } else {
          
            res.render('sales', {customers:results[0],
-        invoices:results[1]})
+        invoices:results[1], commodities:results[2]})
             
         }
     })
@@ -42,11 +43,11 @@ router.get('/sales.json',(req,res)=>{
 router.get('/sales/:id',(req,res)=>{
     let id = req.params.id
     
-    connection.query(`SELECT * FROM invoice INNER JOIN customers on invoice.customer_id = customers.id WHERE id = ${id}`, id,(error,results)=>{
+    connection.query(`SELECT * FROM invoice INNER JOIN customers on invoice.customer_id = customers.id WHERE id = ${id};SELECT name FROM customers`, id,(error,results)=>{
         if(error){
             console.log(error)
         } else {
-            res.render('invoice',{items:results})
+            res.render('invoice',{items:results[0],customers:results[1]})
            
         }
     })
@@ -76,7 +77,7 @@ router.post('/sales',(req,res)=>{
         payment = req.body.payment,
         balance = req.body.balance;
      const query = 'if '
-    connection.query('INSERT INTO invoice (Dates,due_dates,customer_id,item,quantity,amount,balance) VALUES(?,?,?,?,?,?,?)',[invoice,dueDate,customer,item,quantity,amount,balance],(error,results)=>{
+    connection.query('INSERT INTO invoice (Dates,due_dates,item,quantity,amount,balance,customerName) VALUES(?,?,?,?,?,?,?)',[invoice,dueDate,item,quantity,amount,balance,customer],(error,results)=>{
         if(error){
             console.log(error)
         } else {
@@ -84,6 +85,13 @@ router.post('/sales',(req,res)=>{
         }
     })
 
+})
+
+//sales graph
+router.get('/payment.json',(req,res)=>{
+    connection.query("SELECT Dates, payment FROM invoice WHERE Dates between '2021-10-01' AND '2021-10-31' ORDER BY Dates;",(error,results)=>{
+        res.json(results)
+    })
 })
 
 module.exports =router;

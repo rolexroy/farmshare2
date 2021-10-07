@@ -2,7 +2,8 @@ const express = require("express");
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const session = require('express-session')
-
+const AfricasTalking = require('africastalking');
+const reload = require('reload')
 const ejs = require('ejs');
 const multer = require('multer');
 const uuid = require('uuid').v4;
@@ -14,7 +15,8 @@ const userRoute = require('./Routes/user')
 const blogRoute = require('./Routes/blog')
 const marketingRoute = require('./Routes/marketing')
 const aggregationRoute = require('./Routes/aggregation')
-const customersRoute = require('./Routes/customers')
+const customersRoute = require('./Routes/customers');
+const { parse } = require("uuid");
 
 
 const app = express();
@@ -28,7 +30,7 @@ app.use(session({
 
 }))
 
-app.use(express.static('../farmshare/public'));
+app.use(express.static('../farmshare2/public'));
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
@@ -70,7 +72,33 @@ connection.connect()
      next()
 })
 
+// const africastalking = AfricasTalking({
+//     apiKey: 'e3edeea31332ecb31388fe2b2f4f1c0c418443a9c3bf31c9e87e213e26ae5d71', 
+//     username: 'sandbox'
+//   });
 
+// function sendSMS(){
+//     app.post('/msg',async (req,res)=>{
+//         try{
+//             const msg = req.body.msg
+//             const result=  await africastalking.SMS.send({
+//               to: '+254700356447', 
+//               message: msg,
+//               from: 'FRMSHARE'
+//             });
+//             console.log(result);
+//         } catch(ex){
+//             console.error(ex)
+//         }
+      
+           
+         
+//     })
+    
+// }
+
+ 
+// sendSMS()
 app.use('/farmers',farmerRoute)
 app.use(salesRoute)
 app.use(productionRoute)
@@ -101,6 +129,84 @@ app.get('/stock.json',(req,res)=>{
     })
 })
 
+
+
+app.post('/',(req,res)=>{
+   const{ phoneNumber,text,sessionId } = req.body
+   let response;
+
+   if(text === ''){
+       response = 'CON Enter farmer id'
+   } 
+   if(text !== ''){
+    
+       let array = text.split('*')
+      
+       if(array.length === 1){
+        connection.query('SELECT id FROM farmers',(error,results)=>{
+            const id = results.find(result => result.id === array[0])
+            if(id !== 'undefined'){
+                response = 'CON Select support needed.\n1.Agroinputs\n2.Extension services'
+            } else {
+                response = 'END You are not registered'
+            }
+            
+        })
+        
+       } else if(array.length === 2){
+        
+           if(parseInt(array[1]) === 1){
+               response = 'CON Select agroinputs needed\n1.Chicks\n2.Seedlings'
+               
+           } else if(parseInt(array[1]) === 2) {
+               console.log(array)
+               response = 'CON Select Extension services needed\n1.Vetenirany services\n2.Weeding'
+           } else{
+               response = 'END Invalid input'
+           }
+
+       } 
+      
+    
+   
+   else if(array.length === 3){
+      
+    if(parseInt(array[2]) === 1){
+        connection.query('UPDATE production SET support = ? WHERE farmerId = ?', ['Chicks',parseInt(array[0])],(error,results)=>{
+            if(error){
+                console.log(error)
+            } else {
+            response = 'END Your data was saved successfully'
+             console.log('inserted into db')
+            }
+        })
+    
+    } else if(parseInt(array[2]) === 2){
+        connection.query('INSERT INTO production (support) VALUES (?) WHERE farmerId = ?', ['Seedlings',array[0]],(error,results)=>{
+            if(error){
+                console.log(error)
+            } else {
+            response = 'END Your data was saved successfully'
+             console.log('inserted into db')
+            }
+        })
+        
+    } else {
+        response = 'END invalid input'
+    }
+   }
+
+}
+
+   setTimeout(()=>{
+       res.send(response)
+       res.end()
+
+   },1500)
+})
+
+
+
 app.listen(3000, () => {
-    console.log('Listening to port 3080')
+    console.log('Listening to port 3000')
 });

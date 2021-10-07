@@ -12,71 +12,90 @@ const connection = mysql.createConnection({
 });
 connection.connect()
 
-router.get('/distribution',(req,res)=>{
-    connection.query('SELECT distribution.order_id, distribution.product, distribution.quality , distribution.quantity, distribution.payment , distribution.collection_point, distribution.expected_date, distribution.actual_date, delivery_status FROM distribution;SELECT groupName from stock',(error,results)=>{
+// router.get('/distribution',(req,res)=>{
+//     connection.query('SELECT * FROM distribution;SELECT groupName from stock',(error,results)=>{
         
-        if(error){
-            console.log(error)
-        } else {
+//         if(error){
+//             console.log(error)
+//         } else {
           
-           res.render('distribution', {items:results[0], groups:results[1]})
+//            res.render('distribution', {items:results[0], groups:results[1]})
 
 
 
 
 
-}
-    })
+// }
+//     })
     
+// })
+
+router.get('/distribution/:id',(req,res)=>{
+    let id = req.params.id
+    connection.query('SELECT * FROM order_table WHERE id = ?;SELECT groupName from stock',id,(error,results)=>{
+      
+        
+        res.render("distribution",{items:results[0],groups:results[1], error: false})
+
+    })
+   
 })
 //Distribution form
-router.get('/distribution/form',(req,res)=>{
-    connection.query('SELECT stock.groupName FROM stock',(error,results)=>{
+router.get('/distribution',(req,res)=>{
+    connection.query('SELECT * FROM distribution',(error,results)=>{
         
         if(error){
             console.log(error)
         } else {
-           res.render('distribution_form',{items:results})
+           res.render('distributionInfo',{items:results})
         }
     })
 })
 
 //Distribution store form
 router.post('/distribution/store/form',(req,res)=>{
-    let id = req.body.id;
-    let product = req.body.product.toLowerCase();
+    
+    let id = req.body.orderID;
+    let product = req.body.commodity.toLowerCase();
     let quality = req.body.quality;
     let quantity = req.body.quantity;
     let delivery = req.body.delivery;
     let groupName = req.body.groupName;
    
     
-    connection.query('SELECT stock.quantity FROM stock WHERE groupName = ? AND commodity = ? AND quality = ?',
-    [groupName, product, quality ],
+    
+    connection.query('SELECT quantity FROM stock WHERE commodity = ? AND quality = ?;SELECT groupName from stock',
+    [product, quality ],
     
     (error,results) => { 
         if(error){
             console.log(error)
         } else {
-            if(Number(quantity) > results[0][0].quantity ) {
+          if(Number(quantity) > results[0][0].quantity ) {
                 console.log('Too much!');
-                res.render('distribution_validation', { items: [{ order_id: req.body.id, product: req.body.product.toLowerCase(), quality: req.body.quality, quantity: req.body.quantity, payment: req.body.payment,
-                collection_point: req.body.collection_point, expected_date: req.body.expected_date, actual_date: req.body.actual_date, delivery_status: req.body.delivery }],  groups:results[1] });
-               
-            } else {
-                connection.query('INSERT INTO distribution ( product, quality, quantity, payment, collection_point, expected_date, actual_date, delivery_status, groupName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [ product, req.body.quality, req.body.quantity, req.body.payment, req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, groupName],  
+
+                connection.query('SELECT * FROM order_table WHERE id = ?;SELECT groupName from stock',id,(error,results)=>{
+      
+        
+                    res.render("distribution",{items:results[0],groups:results[1], error: true})
+            
+                })
+              
+                
+             } else {
+                connection.query('INSERT INTO distribution ( product, quality, quantity,collection_point,delivery_status, groupName) VALUES (?, ?, ?, ?, ?, ?)',
+                [ product, req.body.quality, req.body.quantity,req.body.collection_point, req.body.expected_date, req.body.actual_date, delivery, groupName],  
                 (error,results) => { 
                     if(error){
                         console.log(error)
                     } else {
-                        res.redirect('/distribution/form');
+                        res.redirect('/distribution/info');
                         // console.log('inserted into db')
                     }
                 }); 
             } 
     
-            if(delivery === 'Delivered'){
+            if(delivery === 'Delivered' && Number(quantity) <= results[0][0].quantity ){
                 connection.query('UPDATE stock SET quantity = quantity - ? WHERE groupName= ? AND commodity = ? AND quality = ?',[quantity, groupName, product, quality],  
                     (error,results) => { 
                     if(error){
@@ -85,26 +104,13 @@ router.post('/distribution/store/form',(req,res)=>{
                         console.log('updated');
                     }
                 })
-            }
+            } 
         } 
     }); 
   
 })
 
-router.get('/distribution/:id', (req,res) => {
-    let id = Number(req.params.id);
-        connection.query(        
-            'SELECT * FROM distribution WHERE order_id = ? ',[id] ,
-            (error,results) => {
-                // if(results.length === 1){
-                    let check = results[0].delivery_status == 'Delivered';
-                    res.render ('edit_distribution' , {item : [results[0], check]});
-                // } else {
-                //     res.render ('error');
-                // }
-            }
-        );
-});
+
 
 //update distribution record
 router.post('/update/distribution/:id', (req, res) => {

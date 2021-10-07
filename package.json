@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --watchAll --verbose",
     "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "africastalking": "^0.5.4",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "ejs": "^3.1.6",
@@ -20,5 +21,8 @@
     "mysql": "^2.18.1",
     "nodemon": "^2.0.12",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "reload": "^3.2.0"
   }
 }

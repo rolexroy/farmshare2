@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<%- include('partials/modal') %>
+
 
 
 <% let payments = invoices.reduce((a,b) => a+b.payment,0) %>
@@ -28,7 +28,7 @@
       <th hidden>Invoice Date</th>
        <th>Due Date</th>
    <th>Status</th>
-   <th>Days Due</th>
+   
       
 
       
@@ -55,16 +55,7 @@
        <%} else { %>
         <td><%= "partial"%></td>
        <%}%>
-
-       
-       <td class="dates_due"></td>
-
-        
       
-       
-      
-       
-     
       </tr>
       <%}%>
       <tfoot>
@@ -84,13 +75,44 @@
 </div>
 
 
-<%- include('partials/modal') %>
+
+
+<%- include('partials/modal',{customers:customers}) %>
 
 
 <div>
-  <table>
-    <th></th>
-  </table>
+  <% let count = 0%>
+ <h1>Todays' transactions</h1>
+ <% let date = new Date().toLocaleDateString() %>
+ <!-- <h2> <%= date %></h2> -->
+
+ <% for (let invoice of invoices) { %>
+  <!-- <%= invoice.Dates.toLocaleDateString()%> -->
+  <% if(date === invoice.Dates.toLocaleDateString()){ %>
+    <%count = count += 1%>
+    <table>
+      <tr>
+        <th>Invoice Number</th>
+       
+        <th>Amount</th>
+        <th>Payment</th>
+        
+      </tr>
+      <tr>
+       
+      <td><%= invoice.amount %></td>
+      <td><%= invoice.payment %></td>
+    
+      </tr>
+    </table>
+ 
+
+ <%}%>
+ 
+<%}%>
+<%if(count === 0) { %>
+  <li>No transactions today</li>
+<%}%> 
 </div>
 </div>
 

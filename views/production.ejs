@@ -9,6 +9,10 @@
         <div class="table-container">
             <div class="table thead-dark"></div>
         </div>
+        <form action="/msg" method="POST">
+          <input type="text" name="msg" id="">
+          <button type="submit">Send Message</button>
+        </form>
         
         
         <div class="production-details">
@@ -117,7 +121,7 @@
           {title:"Name", field:"farmerName", hozAlign:"left"},
           {title:"Group Name", field:"groupName",headerFilter:'input'},
           {title:"Value Chain", field:"valuechain",headerFilter:'input'},
-          
+          {title:"support",field:"support"},
           {title:"Yield(in Kg)", field:"expectedYield"},
           {title:"commodity", field:"commodity",headerFilter:'input'},
         

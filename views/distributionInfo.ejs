@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<h1>Distribution Info</h1>
+<div class="containers">
+    <%- include('partials/sidebar') %>
+    <div class="table">
+       
+        <table>
+         
+       <thead>
+      
+           <tr>
+           <th>Order Id</th>
+           <th>Product</th>
+           <th>Quality</th>
+           <th>Quantity</th>
+        </tr>
+       </thead>
+       <tbody>
+        <% for (let item of items) { %>
+           <tr>
+        
+            <td><%= item.orderID %></td>
+            <td><%= item.product %></td>
+            <td><%= item.quality %></td>
+            <td><%= item.quantity %></td>
+
+            <%}%>
+        </tr>
+      
+       </tbody>
+      
+        </table>
+      
+   </div> 
+</div>
+
+   
+    </body>
+</html>

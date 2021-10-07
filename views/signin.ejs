@@ -1,20 +1,27 @@
 <%- include ('partials/header') %>
 
 
-<h1>SignIn Form</h1>
+<h1>SignIn</h1>
 
-<form action="/signin" method="POST">
+<div class="containers">
+    <div class="form-container">
+        <form action="/signin" method="POST" class="signin-form">
 
    
-    <label>Name 
-        <input type="text" name="name" id="name">
-    </label>
-    <label>Password
-        <input type="password" name="password" id="password">
-    </label>
-    <input type="submit" value="Sign In">
+            <label>Name 
+                <input type="text" name="name" id="name">
+            </label>
+            <label>Password
+                <input type="password" name="password" id="password">
+            </label>
+            <input type="submit" class="btn" value="Sign In">
+        
+        </form>
+    </div>
+   
+</div>
 
-</form>
+
 
 </body>
 </html>

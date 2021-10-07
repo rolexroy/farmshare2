@@ -3,9 +3,10 @@
   <%- include('partials/sidebar') %>
 
     <div class="table thead-dark"></div>
+   
     <div class="production-details">
         <form action="/order/store" method="POST">
-            <h2>Customer Details</h2>
+            <h2>Add Order</h2>
             <!-- <div class="form-group row">
                 <label for="inputEmail4" class="col-sm-2 col-form-label">Customer Id</label>
                 <div class="col-sm-10">
@@ -84,11 +85,57 @@
     <script type="text/javascript" src="dist/js/jquery_wrapper.min.js"></script>
 
     <script>
+
+const getParams = (url) =>{
+  const urlParams = new URLSearchParams(url);
+  const myParams = urlParams.get('error')
+
+
+ if(myParams === "Not enough stock") {
+  alert('You do not have enough items of this product in stock. Edit to pick a lower stock')
+ }
+ if(myParams === 'Not in stock'){
+   alert('This item is not in stock')
+ }
+}
+
+const postData = (data)=>{
+   fetch('/market', {
+  method: 'POST',
+  headers: {
+   'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(data)
+}).then((response)=>{
+ getParams(response.url)
+})
+}
+
+
+
+
+function btnFormatter( cell, params, onRendered ) {
+	var element = document.createElement('button');
+  element.textContent = 'Distribute'
+
+  element.addEventListener('click',()=>{
+      var id = cell.getData().id
+      const data = cell.getRow().getData()
+      if(confirm('Are you sure you want to distribute this element'))
+      postData(data)
+
+    
+     
+   
+  })
+   return element;
+}
         var table = new Tabulator(".table", {
       height:'auto', // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
       
      ajaxURL:'/marketing.json', //load data
       layout:"fitColumns", //fit columns to width of table (optional)
+
       columns:[ //Define Table Columns
      
       
@@ -97,14 +144,15 @@
           {title:"Commodity", field:"commodity",headerFilter:'input'},
           {title:"Quality", field:"quality",headerFilter:'input'},
           
-          {title:"Quantity", field:"quantity"},
+          {title:"Quantity", field:"quantity",editor:true},
+          {title:'Action',formatter:btnFormatter}
           
         
       
       ],
-      rowClick:function(e, row){ //trigger an alert message when the row is clicked
-          alert("Row " + row.getData().id + " Clicked!!!!");
-      },
+      // rowClick:function(e, row){ //trigger an alert message when the row is clicked
+      //     alert("Row " + row.getData().id + " Clicked!!!!");
+      // },
  });
     </script>
 </html>

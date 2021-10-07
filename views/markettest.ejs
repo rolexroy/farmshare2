@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+
+
+<div class="table">
+    <table>
+       
+            <thead>
+                <form action="/commodity/search" method="POST">
+                    <input type="text" value="filter" name="commodity">
+                   
+                </form>
+                <td>Name</td>
+                <td>Commodity</td>
+                
+                <td>Quality</td>
+                <td>Quantity</td>
+                <td>Action</td>
+                <td>Test</td>
+            </thead>
+            <% for (let item of items) { %>
+            <tbody>
+              
+                <td><%= item.name %></td>
+                <td><%= item.commodity %></td>
+                <td><%= item.quality %></td>
+                <td><%= item.quantity %></td>
+                <td>
+                    <form action="/markettest/<%= item.id %>" method="POST">
+                        <input type="submit" value="Distribute">
+                     
+                    </form>
+                </td>
+                            
+            </tbody>
+            <%}%>
+     
+    </table>
+    <Button class="btn">Get data</Button>
+</div>
+
+<script>
+  let data = {
+      a:2,
+      b:3
+  }
+    let button = document.querySelector('.btn')
+    
+    button.addEventListener('click',()=>{
+        fetch('/market',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(data)
+        })
+
+    })
+
+</script>
+</body>
+</html>

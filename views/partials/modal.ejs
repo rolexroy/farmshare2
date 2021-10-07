@@ -8,6 +8,7 @@
           </button>
         </div>
         <div class="modal-body">
+       
         <form action="/sales" method="POST">
            
             <label>Invoice Date
@@ -17,13 +18,17 @@
                 <input type="date" name="dueDate" id="dueDate">
             </label>
             <label>Customer
-              
-                <input type="number" name="customer">
-               </select>
-               <button>Add customer</button>
+            <select name="customer" id="customer">
+              <% for (let customer of customers) { %>
+                <option value="<%= customer.name%>"><%= customer.name %></option>
+
+              <%}%>
+            </select>
+               
             </label>
             <label>Item
-                <input type="text" name="item" id="item">
+             
+                
             </label>
             <label>Quantity
                 <input type="number" name="quantity" id="quantity">
