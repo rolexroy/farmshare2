@@ -51,11 +51,11 @@ app.use(bodyParser.urlencoded({
 }));
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'sql1pass',
+    host: 'us-cdbr-east-04.cleardb.com',
+    user: 'b889825c0db19b',
+    password: '08dae91e',
     multipleStatements:true,
-    database: 'farmshare'
+    database: 'heroku_da6aaf54a461862'
 
 });
 
@@ -71,7 +71,7 @@ connection.connect()
         }
      next()
 })
-
+const port = process.env.PORT || 3000
 // const africastalking = AfricasTalking({
 //     apiKey: 'e3edeea31332ecb31388fe2b2f4f1c0c418443a9c3bf31c9e87e213e26ae5d71', 
 //     username: 'sandbox'
@@ -207,6 +207,6 @@ app.post('/',(req,res)=>{
 
 
 
-app.listen(3000, () => {
+app.listen(port, () => {
     console.log('Listening to port 3000')
 });
